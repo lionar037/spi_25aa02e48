@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/app_spi.dir/main.cc.o CMakeFiles/app_spi.dir/spi.cc.o -o app_spi 

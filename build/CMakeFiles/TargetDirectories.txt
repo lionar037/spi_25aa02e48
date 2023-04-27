@@ -1,0 +1,3 @@
+/home/pi/src/spi/spi_success/build/CMakeFiles/rebuild_cache.dir
+/home/pi/src/spi/spi_success/build/CMakeFiles/edit_cache.dir
+/home/pi/src/spi/spi_success/build/CMakeFiles/app_spi.dir
