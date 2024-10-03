@@ -14,3 +14,6 @@ pin 22 SDI
 pin 23 SCK
 pin 24 CS
 
+#update 
+
+git remote set-url origin  git@github.com:lionar037/spi_25aa02e48.git
