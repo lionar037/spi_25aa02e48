@@ -12,6 +12,10 @@
 #include <linux/spi/spidev.h>
 
 
+
+
+
+
 #define     SPI_DEVICE "/dev/spidev0.1"
     
 #define     SPEED               100000
@@ -83,6 +87,8 @@ union statusREGISTER {
         void        read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
         void        erase_sst25_all         ();
         uint8_t     read_status             ();
+    protected:
+        void        handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) ;        
     private:
         void        init                    ();
         void        settings_spi            ();
