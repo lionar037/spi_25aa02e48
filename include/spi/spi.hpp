@@ -45,11 +45,10 @@
 #define     AAI_CMD             0xAF //Auto Address Increment 
 #define     ADDRESS_END         0x1FFFF
 
-namespace SPI
-{
+namespace SPI{
 
 union statusREGISTER {
-    struct {
+    struct Register_t{
         unsigned int BUSY : 1;
         unsigned int WEL  : 1;
         unsigned int BP0  : 1;
@@ -57,7 +56,8 @@ union statusREGISTER {
         unsigned int RES  : 2;
         unsigned int AAI  : 1;
         unsigned int BPL  : 1;
-    };
+    }REGISTER;
+
     uint8_t byte;  // Permite el acceso directo al byte completo
 };
 
