@@ -107,7 +107,7 @@ void Spi_t::writeEnable() {
     }//end cmd_byte_spi
 
 
-    uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd){        
+    const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd){        
         std::memset(&spi, 0, sizeof(spi)); // Reinicializar estructura
         spi.len = 2;
         tx_buffer[0] = cmd;
@@ -132,7 +132,7 @@ void Spi_t::writeEnable() {
     //    std::cout<< " BP0 : "<<statReg.BP0 << " BP1 : "<< statReg.BP1 <<std::endl;
     //    return stat;
     //}
-    uint8_t Spi_t::read_status(){
+    const uint8_t Spi_t::read_status(){
         uint8_t stat = cmd_byte_spi_duo(RDSR);
     
         statusREGISTER statReg;
@@ -158,7 +158,7 @@ void Spi_t::writeEnable() {
 
     }// end is_open
 
-    uint8_t Spi_t::get_fs(){
+    const uint8_t Spi_t::get_fs(){
 
     return 0x00;
     }// end get_fs
@@ -274,7 +274,7 @@ void Spi_t::writeEnable() {
         }
     }
 
-    void Spi_t::write(uint32_t address, uint8_t* data, size_t length) {
+    void Spi_t::write(uint32_t address, uint8_t* data, const size_t length) {
             writeEnable(); // Habilitar escritura
 
             //uint8_t cmd = CMD_WRITE; // Comando WRITE

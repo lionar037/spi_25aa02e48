@@ -66,32 +66,21 @@ union statusREGISTER {
         Spi_t                                 ();
         ~Spi_t                                ();
        void        init_sst25vf            ();
-        void        write                   (const uint32_t, uint8_t*, size_t);
+        void        write                   (const uint32_t, uint8_t*, const size_t);
         void        read                    (const uint32_t , uint8_t*,const uint32_t);
         void        erase_sst25_all         ();
         bool        is_open                 ();
         void        spi_close               ();
         const uint32_t    get_spi_speed     ();
-        uint8_t     get_fs                  ();
-        uint8_t     read_status             ();
-        uint8_t     cmd_byte_spi_duo        (const uint8_t);
-
-protected:
-        
-        
-        
-        
-        
-        
-        
-        
-        void        cmd_byte_spi            (const uint8_t);
-        void        writeEnable             () ;
+        const uint8_t     get_fs                  ();
+        const uint8_t     read_status             ();
+        const uint8_t     cmd_byte_spi_duo        (const uint8_t);
         void        writeDisable            ();
-        void        read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
-        
-        
 
+    protected:                                                                
+        void        cmd_byte_spi            (const uint8_t);
+        void        writeEnable             () ;        
+        void        read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
         void        handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) ;        
     private:
         void        init                    ();
