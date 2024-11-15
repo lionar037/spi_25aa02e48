@@ -1,4 +1,5 @@
 #pragma once
+#include <spi/spi.hpp>
 #include <cstdint>
 
 #define SECTOR_ERASE_CMD 0x20 // Comando para borrar un sector
@@ -11,7 +12,7 @@
 //#define MEMORY_SIZE 131072    // Tamaño total de la memoria (en bytes)
 
 namespace SPI{
-    struct Spi_t ;
+    struct Spi_t;
 }
 
 namespace ST25VF010{
@@ -27,7 +28,7 @@ struct St25vf010_t{
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
     private:
-        struct SPI::Spi_t spi{};
+        SPI::Spi_t spi{};
     };
 
 }// end namespace ST25VF010
