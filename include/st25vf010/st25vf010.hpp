@@ -18,14 +18,16 @@ namespace ST25VF010{
 
 struct St25vf010_t{
     public:
+        St25vf010_t()=default;
+        ~St25vf010_t()=default;
         int read();
         int write();
         int erase();
     protected:
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
-        private:
-        SPI::Spi_t spi;
+    private:
+        struct SPI::Spi_t spi{};
     };
 
 }// end namespace ST25VF010
