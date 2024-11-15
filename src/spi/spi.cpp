@@ -59,7 +59,7 @@ namespace SPI {
 
     void Spi_t::init_sst25vf() {
         cmd_byte_spi(EWSR);
-        int status= cmd_byte_spi_duo(WRSR);
+        [[maybe_unused]]int status= cmd_byte_spi_duo(WRSR);
         #ifdef DBG_SPI
         std::cout << std::to_string(status)<<"\n";
         #endif
@@ -126,7 +126,7 @@ namespace SPI {
     const uint8_t Spi_t::read_status(){
         uint8_t stat = cmd_byte_spi_duo(RDSR);
     
-        statusREGISTER statReg;
+        [[maybe_unused]]statusREGISTER statReg;
         statReg.byte = stat;
     
     #ifdef DBG_SPI
