@@ -48,18 +48,15 @@ namespace ST25VF010{
         std::cout << "All sectors erased." << std::endl;
     }
 
-    int St25vf010_t::erase() {
+    void St25vf010_t::erase() {
         
         // Verifica si el dispositivo SPI se ha abierto correctamente
         if (!spi.is_open()) {
             std::cerr << "Failed to open SPI device." << std::endl;
-            return 1;
+        //  return 1;
         }
-
         spi.erase_sst25_all();
-        spi.spi_close();
-        return 0;
+        spi.spi_close();        
     }
 
-
-}
+}//end namespace

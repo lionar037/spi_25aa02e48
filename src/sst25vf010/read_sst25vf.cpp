@@ -7,13 +7,13 @@
 
 namespace ST25VF010{
 
-    int St25vf010_t::read() {
+    void St25vf010_t::read() {
         
         int print=0;
         // Verifica si el dispositivo SPI se ha abierto correctamente
         if (!spi.is_open()) {
             std::cerr << "Failed to open SPI device." << std::endl;
-            return 1;
+            //return 1;
         }
 
         const uint32_t block_size =  256; // Tamaño del bloque en bytes
@@ -22,7 +22,7 @@ namespace ST25VF010{
         std::ofstream outputFile("25vf010a.bin", std::ios::binary);
         if (!outputFile) {
             std::cerr << "Error al abrir el archivo para escritura." << std::endl;
-            return 1;
+            //return 1;
         }
         uint8_t buffer_rd[block_size] = {0};
 
@@ -50,7 +50,7 @@ namespace ST25VF010{
         outputFile.close();
         std::cout << "Lectura completa y guardada en 25vf010a.bin" << std::endl;
 
-        return 0;
+        //return 0;
     }
 
 }

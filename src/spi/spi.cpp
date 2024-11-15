@@ -60,7 +60,9 @@ namespace SPI {
     void Spi_t::init_sst25vf() {
         cmd_byte_spi(EWSR);
         int status= cmd_byte_spi_duo(WRSR);
+        #ifdef DBG_SPI
         std::cout << std::to_string(status)<<"\n";
+        #endif
     }
 
     void Spi_t::spi_close() {
@@ -127,9 +129,10 @@ namespace SPI {
         statusREGISTER statReg;
         statReg.byte = stat;
     
+    #ifdef DBG_SPI
         // Accede a los campos dentro de la estructura 'status'
         std::cout << " BP0 : " << statReg.status.BP0 << " BP1 : " << statReg.status.BP1 << std::endl;
-    
+    #endif
         return stat;
     }
 

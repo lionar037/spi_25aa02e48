@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
 
+//#define DBG_SPI
 
 #define     SPI_DEVICE "/dev/spidev0.1"
     

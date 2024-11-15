@@ -11,24 +11,24 @@
 //#define MEMORY_SIZE (32 * 1024) // Tama      o de la memoria en bytes (32 KB)
 //#define MEMORY_SIZE 131072    // Tamaño total de la memoria (en bytes)
 
-//namespace SPI{
-//    struct Spi_t;
-//}
 
 namespace ST25VF010{
 
 struct St25vf010_t{
     public:
-        St25vf010_t()=default;
+        explicit St25vf010_t();
         ~St25vf010_t()=default;
-        int read();
-        int write();
-        int erase();
+
+        void read();
+        void write();
+        void write(const uint8_t);
+        void write_rand();
+        void erase();
+
     protected:
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
     private:
-
         SPI::Spi_t spi{};
     };
 
