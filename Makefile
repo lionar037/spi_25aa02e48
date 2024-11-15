@@ -72,7 +72,7 @@ ifeq ($(ARCH),x86_64)
 	CC := g++
 #CC := clang++
 else
-	CC := clang++
+	CC := g++
 endif
 
 
