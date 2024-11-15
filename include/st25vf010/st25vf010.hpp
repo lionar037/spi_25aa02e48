@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 #define SECTOR_ERASE_CMD 0x20 // Comando para borrar un sector
 #define MEMORY_SIZE 131072    // Tamaño total de la memoria (en bytes)
