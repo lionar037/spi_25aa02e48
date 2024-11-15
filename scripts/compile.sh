@@ -1,23 +1,39 @@
 #!/bin/bash
 
-#echo ' Adivina el valor numerico de la variable'
-#read A
+APP = read_sst25vf
+FILE =25vf010a.bin
+
+if [[ -e ${FILE} ]]; then
+        rm -Rf ${FILE} 
+        ls
+else
+        echo "no existe la ${FILE} spi"
+fi
 
 
-if [[ -a app ]]
+if [[ -a ${APP}  ]]
 then
-        rm app
+        rm ${APP} 
 	ls
 else
-        echo "no existe la app spi"
+        echo "no existe la sst25vf_app spi"
 fi
 
-g++ -o app main.cc spi.cc
 
-if [[ -a app ]]
-then
-        sudo ./app
-else
-        echo "no se pudo iniciar la app por que no existe app master spi"
-fi
+
+rm -Rf build/
+cmake -S . -B build
+make -C build
+
+#if [[ -a build/${APP} ]]
+#then
+#	sudo ./build/${APP} 
+#	hexdump -C ${FILE} 
+#else
+#       echo "no se pudo iniciar la app por que no existe app master spi"
+#fi
+
+
+
+#g++ -o -g app_wr  write_sst25vf.cc spi.cc
 
