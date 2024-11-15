@@ -28,6 +28,16 @@ sudo apt isntall -y meson
 
 # comandos para memoria WINBOND 25Q16...
 
-flashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=512
+LINK=st25vf010a_flashrom.bin
 
-flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -r st25vf010a_flashrom.bin
+#permisos
+sudo usermod -aG spi $(whoami)
+
+#read
+flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -r $LINK
+
+#write
+flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=256 -w $LINK
+
+#erase
+flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=256 -erase_all
