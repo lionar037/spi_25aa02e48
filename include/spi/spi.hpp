@@ -57,7 +57,7 @@ union statusREGISTER {
         unsigned int RES  : 2;
         unsigned int AAI  : 1;
         unsigned int BPL  : 1;
-    }STATUS;
+    }status;
     //};
 
     uint8_t byte;  // Permite el acceso directo al byte completo
