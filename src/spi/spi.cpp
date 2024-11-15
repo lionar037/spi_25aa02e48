@@ -228,7 +228,7 @@ void Spi_t::writeEnable() {
         return;
     }
 */
-    void read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer, const uint32_t length) {
+    void Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer, const uint32_t length) {
         // Inicializar los buffers
         std::vector<uint8_t> cmd_buffer_tx(4, 0);
         std::vector<uint8_t> cmd_buffer_rx(4, 0);
