@@ -16,8 +16,8 @@ struct St25vf010_t{
         int write();
         int erase();
     protected:
-        void erase_sector(Spi_t &spi, uint32_t address)    ;
-        void erase_entire_memory(Spi_t &spi) ;
+        void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
+        void erase_entire_memory(SPI::Spi_t &spi) ;
     };
 
 }// end namespace ST25VF010
