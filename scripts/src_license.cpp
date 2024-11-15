@@ -5,7 +5,7 @@ int main() {
     // Define the text of the GNU General Public License
     std::string license_text = R"(
              GNU GENERAL PUBLIC LICENSE
-                Version 3, 29 June 2007
+                Version 1, 15 Noviembre 2024
 
     Copyright (C) <year>  <name of author>
     Everyone is permitted to copy and distribute verbatim copies
