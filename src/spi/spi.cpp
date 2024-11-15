@@ -73,7 +73,7 @@ namespace SPI {
     }//end spi_close
 
 
-   uint32_t Spi_t::get_spi_speed(){
+   const uint32_t Spi_t::get_spi_speed(){
         return spi_speed;
     }//end get_spi_speed
 

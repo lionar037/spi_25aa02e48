@@ -69,7 +69,7 @@ union statusREGISTER {
         void        spi_close               ();
         void        write                   (const uint32_t, uint8_t*, size_t);
         void        read                    (const uint32_t , uint8_t*,const uint32_t);
-        uint32_t    get_spi_speed           ();
+        const uint32_t    get_spi_speed     ();
         uint8_t     get_fs                  ();
         uint8_t     cmd_byte_spi_duo        (const uint8_t);
         bool        is_open                 ();
