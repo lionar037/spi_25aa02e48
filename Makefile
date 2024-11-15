@@ -28,32 +28,28 @@ endef
 ################################################################################################
 ################################################################################################v
 PROJECT_NAME 	:=	src
-#OLED 			:= 	oled
 
 # Detectar si es de 32 o 64 bits
 ARCH := $(shell uname -m)
 
 ifeq ($(ARCH),aarch64)
-    APP := bin/mrf24_app
+    APP := bin/st25vf010_app_aarch64
     $(info aarch64 mrf24_tx_app )
 else ifeq ($(ARCH),armv7l) 
     $(info armv7l mrf24_rx_app)
-    APP := bin/mrf24_app
+    APP := bin/st25vf010_app_armv7l
 else ifeq ($(ARCH),x86_64)
-    APP := bin/mrf24_app
+    APP := bin/st25vf010_app_x86_64
     $(info x86_64 detectado OS de 64 bits) 
 else
     $(info ningun OS detectado)
-	APP := bin/mrf24_app
+	APP := bin/st25vf010_app
 endif
 
 # Flags para generar las dependencias automáticamente
 DEPFLAGS = -MMD -MP
-
-#APP         := bin/mrf24_app
 CFLAGS     	:= -Wall -pedantic
-#CCFLAGS     := $(CFLAGS) -std=c++17
-CCFLAGS     := $(CFLAGS) -std=c++20
+CCFLAGS     := $(CFLAGS) -std=c++17
 # Modifica los flags del compilador para incluir DEPFLAGS
 CFLAGS += $(DEPFLAGS)
 CCFLAGS += $(DEPFLAGS)
@@ -69,7 +65,6 @@ C		:= gcc
 MKDIR       	:= mkdir -p
 SRC         	:= $(PROJECT_NAME)
 OBJ         	:= obj
-#LIBDIR 		:= $(PROJECT_NAME)
 LIBDIR          :=  include/
 
 # Compilar con clang++ si es de 64 bits
@@ -84,21 +79,13 @@ endif
 LIBS := $(CFLAGS)
 
 #se duplica , correccion 
-#INCDIRS := -I$(SRC) -I$(LIBDIR)
 ifeq ($(SRC),$(LIBDIR))
     INCDIRS := -I$(SRC)
 else
     INCDIRS := -I$(SRC) -I$(LIBDIR)
 endif
 
-
-LIBS += -pthread -lbcm2835  -lz
-#	Libraries Encript AES
-#LIBS += -lssl -lcrypto
-#	librerias Mosquitto
-#LIBS += -lmosquitto -lrt 
-#	libreria de base de datos
-LIBS += -lmysqlcppconn -lqrencode -lpng
+LIBS += -pthread -lbcm2835
 
 # Detectar la arquitectura del sistema
 ifeq ($(ARCH),x86_64)
@@ -137,7 +124,7 @@ SUBDIRS 	:= $(shell find $(SRC) -type d)
 OBJSUBDIRS 	:= $(patsubst $(SRC)%,$(OBJ)%,$(SUBDIRS))
 ALLOBJ 		:= $(foreach F,$(ALLCPPS) $(ALLCS),$(call C2O,$(F)))
 
-.PHONY: info libs libs-clean libs-cleanall print-vars oled
+.PHONY: info libs libs-clean libs-cleanall print-vars
 #Generate APP
 $(APP) : $(OBJSUBDIRS) $(ALLOBJ)
 	$(CC) -o $(APP) $(ALLOBJ) $(LIBS)
@@ -169,9 +156,6 @@ cleanmrf:
 
 usr-libs:
 	$(MAKE) -C $(OLED)/
-
-oled:
-	$(MAKE) -C $(OLED)/	
 
 libs:
 	$(MAKE)	-C $(LIBDIR)/
