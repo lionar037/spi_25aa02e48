@@ -45,7 +45,7 @@
 #define     AAI_CMD             0xAF //Auto Address Increment 
 #define     ADDRESS_END         0x1FFFF
 
-namespace SPACE_SPI
+namespace SPI
 {
 
 union statusREGISTER {
@@ -62,10 +62,10 @@ union statusREGISTER {
 };
 
 
-    class SPI {
+    class Spi_t {
     public:
-        SPI                                 ();
-        ~SPI                                ();
+        Spi_t                                 ();
+        ~Spi_t                                ();
        
         void        spi_close               ();
         void        write                   (const uint32_t, uint8_t*, size_t);

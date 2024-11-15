@@ -1,21 +1,20 @@
+#include <spi/spi.hpp>
 #include <iomanip> 
 #include <cstring>
-#include "spi.h"
 
+namespace SPI {
 
-namespace SPACE_SPI {
-
-    SPI::SPI(): spi_speed(SPEED) { 
+    Spi_t::Spi_t(): spi_speed(SPEED) { 
         init();
         settings_spi();
         init_sst25vf();
     }
 
-    SPI::~SPI() {
+    Spi_t::~Spi_t() {
         spi_close();
     }
 
-    void SPI::init() {
+    void Spi_t::init() {
         fs = open(SPI_DEVICE, O_RDWR);
         if (fs < 0) {
             perror("Could not open the SPI device");
@@ -47,7 +46,7 @@ namespace SPACE_SPI {
     }//end init
 
 
-    void SPI::settings_spi() {
+    void Spi_t::settings_spi() {
         spi.len = LARGE_SECTOR_SIZE;
         spi.tx_buf = (unsigned long)tx_buffer;
         spi.rx_buf = (unsigned long)rx_buffer;
@@ -58,35 +57,35 @@ namespace SPACE_SPI {
         memset(rx_buffer, 0xff, sizeof(rx_buffer));
     }//end settings_spi
 
-void SPI::init_sst25vf() {
+void Spi_t::init_sst25vf() {
     cmd_byte_spi(EWSR);
     int status= cmd_byte_spi_duo(WRSR);
 
 }
 
 
-    void SPI::spi_close() {
+    void Spi_t::spi_close() {
         if (fs >= 0) {
             close(fs);
         }
     }//end spi_close
 
 
-   uint32_t SPI::get_spi_speed(){
+   uint32_t Spi_t::get_spi_speed(){
         return spi_speed;
     }//end get_spi_speed
 
 
-void SPI::writeEnable() {
+void Spi_t::writeEnable() {
     cmd_byte_spi(WREN);
 }
 
 
-    void SPI::writeDisable() {
+    void Spi_t::writeDisable() {
         cmd_byte_spi(WRDI); //Write-Disable
     }
 
-    void SPI::cmd_byte_spi(const uint8_t cmd) {
+    void Spi_t::cmd_byte_spi(const uint8_t cmd) {
         std::memset(&spi, 0, sizeof(spi)); // Inicializar estructura
         std::memset(rx_buffer, 0xff, LARGE_SECTOR_SIZE);
         std::memset(tx_buffer, 0xff, LARGE_SECTOR_SIZE);
@@ -106,7 +105,7 @@ void SPI::writeEnable() {
     }//end cmd_byte_spi
 
 
-    uint8_t SPI::cmd_byte_spi_duo(const uint8_t cmd){        
+    uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd){        
         std::memset(&spi, 0, sizeof(spi)); // Reinicializar estructura
         spi.len = 2;
         tx_buffer[0] = cmd;
@@ -124,7 +123,7 @@ void SPI::writeEnable() {
     }// end cmd_byte_spi_duo
 
 
-    uint8_t SPI::read_status(){
+    uint8_t Spi_t::read_status(){
         uint8_t stat= cmd_byte_spi_duo(RDSR);
 
         statusREGISTER statReg;
@@ -133,7 +132,7 @@ void SPI::writeEnable() {
         return stat;
     }
 
-    void SPI::erase_sst25_all(){
+    void Spi_t::erase_sst25_all(){
         writeEnable();
         init_sst25vf();
         cmd_byte_spi(CHIP_ERASE_ALL);
@@ -141,19 +140,19 @@ void SPI::writeEnable() {
     }
 
 
-    bool SPI::is_open(){
+    bool Spi_t::is_open(){
 
     return true;
 
     }// end is_open
 
-    uint8_t SPI::get_fs(){
+    uint8_t Spi_t::get_fs(){
 
     return 0x00;
     }// end get_fs
 
 
-    void SPI::read(const uint32_t address, uint8_t* buffer_received,const uint32_t length) {
+    void Spi_t::read(const uint32_t address, uint8_t* buffer_received,const uint32_t length) {
         read_write(CMD_READ_DATA ,address,buffer_received,length);
     }// end read_data
 /*
@@ -180,7 +179,7 @@ void SPI::writeEnable() {
 */
 
 
-void SPI::read_write(const uint8_t cmd , const uint32_t address, uint8_t* buffer,const uint32_t length) {
+void Spi_t::read_write(const uint8_t cmd , const uint32_t address, uint8_t* buffer,const uint32_t length) {
     std::memset(rx_buffer, 0xff, LARGE_SECTOR_SIZE);
     std::memset(tx_buffer, 0xff, LARGE_SECTOR_SIZE);
 
@@ -227,7 +226,7 @@ void SPI::read_write(const uint8_t cmd , const uint32_t address, uint8_t* buffer
 }
 
 
-void SPI::write(uint32_t address, uint8_t* data, size_t length) {
+void Spi_t::write(uint32_t address, uint8_t* data, size_t length) {
         writeEnable(); // Habilitar escritura
 
     	//uint8_t cmd = CMD_WRITE; // Comando WRITE
