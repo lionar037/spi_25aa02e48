@@ -4,6 +4,11 @@
 #define SECTOR_ERASE_CMD 0x20 // Comando para borrar un sector
 #define MEMORY_SIZE 131072    // Tamaño total de la memoria (en bytes)
 #define SECTOR_SIZE 4096      // Tamaño de cada sector (en bytes)
+//#define MEMORY_SIZE (32 * 1024) // Tama      o de la memoria en bytes (32 KB)
+
+#define ADDRESS_END         0x1FFFF
+#define MEMORY_SIZE ADDRESS_END
+
 
 namespace SPI{
     struct Spi_t ;

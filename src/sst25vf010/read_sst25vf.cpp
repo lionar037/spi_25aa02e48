@@ -5,9 +5,6 @@
 #include <ctime>
 #include <iostream>
 
-//#define MEMORY_SIZE (32 * 1024) // Tama      o de la memoria en bytes (32 KB)
-
-#define MEMORY_SIZE ADDRESS_END
 
 namespace ST25VF010{
 
