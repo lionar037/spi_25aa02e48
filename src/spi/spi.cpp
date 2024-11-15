@@ -123,12 +123,22 @@ void Spi_t::writeEnable() {
     }// end cmd_byte_spi_duo
 
 
+    //uint8_t Spi_t::read_status(){
+    //    uint8_t stat= cmd_byte_spi_duo(RDSR);
+    //    statusREGISTER statReg;
+    //    statReg.byte = stat;
+    //    std::cout<< " BP0 : "<<statReg.BP0 << " BP1 : "<< statReg.BP1 <<std::endl;
+    //    return stat;
+    //}
     uint8_t Spi_t::read_status(){
-        uint8_t stat= cmd_byte_spi_duo(RDSR);
-
+        uint8_t stat = cmd_byte_spi_duo(RDSR);
+    
         statusREGISTER statReg;
         statReg.byte = stat;
-        std::cout<< " BP0 : "<<statReg.BP0 << " BP1 : "<< statReg.BP1 <<std::endl;
+    
+        // Accede a los campos dentro de la estructura 'status'
+        std::cout << " BP0 : " << statReg.status.BP0 << " BP1 : " << statReg.status.BP1 << std::endl;
+    
         return stat;
     }
 
