@@ -1,5 +1,4 @@
 #pragma once
-#include <spi/spi.hpp>
 #include <cstdint>
 
 #define SECTOR_ERASE_CMD 0x20 // Comando para borrar un sector
@@ -28,6 +27,7 @@ struct St25vf010_t{
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
     private:
+    #include <spi/spi.hpp>
         SPI::Spi_t spi{};
     };
 
