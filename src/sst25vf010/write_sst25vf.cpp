@@ -4,9 +4,9 @@
 
 namespace ST25VF010{
 
-	St25vf010_t::St25vf010_t{
+	//St25vf010_t::St25vf010_t{
 	//	init();
-	}
+	//}
 
 	void St25vf010_t::init(){
 		spi.erase_sst25_all();

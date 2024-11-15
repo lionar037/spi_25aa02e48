@@ -16,7 +16,7 @@ namespace ST25VF010{
 
 struct St25vf010_t{
     public:
-        explicit St25vf010_t();
+        St25vf010_t()=default;
         ~St25vf010_t()=default;
 
         void read();
