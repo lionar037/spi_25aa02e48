@@ -37,7 +37,6 @@ namespace SPI {
             exit(EXIT_FAILURE);
         }
 
-
         uint8_t bits = 8;
         if (ioctl(fs, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
             perror("Could not set SPI bits per word");
@@ -46,7 +45,6 @@ namespace SPI {
         }
 
     }//end init
-
 
     void Spi_t::settings_spi() {
         spi.len = LARGE_SECTOR_SIZE;
@@ -65,22 +63,20 @@ namespace SPI {
         std::cout << std::to_string(status)<<"\n";
     }
 
-
     void Spi_t::spi_close() {
         if (fs >= 0) {
             close(fs);
         }
     }//end spi_close
 
-
    const uint32_t Spi_t::get_spi_speed(){
         return spi_speed;
     }//end get_spi_speed
 
 
-void Spi_t::writeEnable() {
-    cmd_byte_spi(WREN);
-}
+    void Spi_t::writeEnable() {
+        cmd_byte_spi(WREN);
+    }
 
 
     void Spi_t::writeDisable() {
@@ -125,13 +121,6 @@ void Spi_t::writeEnable() {
     }// end cmd_byte_spi_duo
 
 
-    //uint8_t Spi_t::read_status(){
-    //    uint8_t stat= cmd_byte_spi_duo(RDSR);
-    //    statusREGISTER statReg;
-    //    statReg.byte = stat;
-    //    std::cout<< " BP0 : "<<statReg.BP0 << " BP1 : "<< statReg.BP1 <<std::endl;
-    //    return stat;
-    //}
     const uint8_t Spi_t::read_status(){
         uint8_t stat = cmd_byte_spi_duo(RDSR);
     
@@ -153,13 +142,10 @@ void Spi_t::writeEnable() {
 
 
     bool Spi_t::is_open(){
-
     return true;
-
     }// end is_open
 
     const uint8_t Spi_t::get_fs(){
-
     return 0x00;
     }// end get_fs
 
@@ -176,58 +162,6 @@ void Spi_t::writeEnable() {
         }
     }
 
-    /*
-    void Spi_t::read_write(const uint8_t cmd , const uint32_t address, uint8_t* buffer,const uint32_t length) {
-        std::memset(rx_buffer, 0xff, LARGE_SECTOR_SIZE);
-        std::memset(tx_buffer, 0xff, LARGE_SECTOR_SIZE);
-
-        uint8_t cmd_buffer_tx_tmp[4]={0};
-        uint8_t cmd_buffer_rx_tmp[4]={0};
-
-        // Llenar el buffer de transmisión con el comando de lectura y la dirección
-        cmd_buffer_tx_tmp[0] = cmd;
-        cmd_buffer_tx_tmp[1] = (address >> 16) & 0xFF; // Dirección alta
-        cmd_buffer_tx_tmp[2] = (address >> 8) & 0xFF;  // Dirección media
-        cmd_buffer_tx_tmp[3] = address & 0xFF;         // Dirección baja
-
-        struct spi_ioc_transfer spi_transfer[2] = {};
-
-        // Transferencia para enviar el comando de lectura y la dirección
-        spi_transfer[0].tx_buf = (unsigned long)cmd_buffer_tx_tmp;
-        spi_transfer[0].rx_buf = (unsigned long)cmd_buffer_rx_tmp;  // No necesitamos recibir datos en este paso
-        spi_transfer[0].len = 4;
-        spi_transfer[0].speed_hz = get_spi_speed();
-        spi_transfer[0].bits_per_word = 8;
-        spi_transfer[0].cs_change = 0; // Mantener la selección de chip activa después de esta transferencia
-        
-        uint8_t tx_buffer_tmp[length];
-        uint8_t rx_buffer_tmp[length];
-        // Usar memoria dinámica
-        //uint8_t* tx_buffer_tmp = new uint8_t[length];
-        //uint8_t* rx_buffer_tmp = new uint8_t[length];
-
-        // Transferencia para enviar/recibir los datos
-        spi_transfer[1].tx_buf = (unsigned long)tx_buffer_tmp;   
-        spi_transfer[1].rx_buf = (unsigned long)rx_buffer_tmp;    
-        spi_transfer[1].len = length;
-        spi_transfer[1].speed_hz = get_spi_speed();
-        spi_transfer[1].bits_per_word = 8;
-        spi_transfer[1].cs_change = 1; // Desactivar la selección de chip después de esta transferencia
-        if(cmd==CMD_WRITE_DATA) {
-            std::memcpy(tx_buffer_tmp,buffer,length);
-        }
-
-        // Ejecutar ambas transferencias SPI
-        if (ioctl(fs, SPI_IOC_MESSAGE(2), spi_transfer) < 0) {
-            perror("Error al realizar la transferencia SPI");
-            std::cerr << "Comando: " << std::hex << (int)cmd << ", Dirección: " << std::hex << address << std::endl;
-            exit(EXIT_FAILURE);
-        }
-        if(cmd==CMD_READ_DATA) std::memcpy(buffer,rx_buffer_tmp,length);
-        
-        return;
-    }
-*/
     void Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer, const uint32_t length) {
         // Inicializar los buffers
         std::vector<uint8_t> cmd_buffer_tx(4, 0);
@@ -295,6 +229,5 @@ void Spi_t::writeEnable() {
             std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
         }
     }
-
 
 }//end namespace spi

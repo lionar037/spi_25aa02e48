@@ -5,7 +5,6 @@
 #include <ctime>
 #include <iostream>
 
-
 namespace ST25VF010{
 
     int St25vf010_t::read() {
@@ -16,7 +15,6 @@ namespace ST25VF010{
             std::cerr << "Failed to open SPI device." << std::endl;
             return 1;
         }
-
 
         const uint32_t block_size =  256; // Tamaño del bloque en bytes
         const uint32_t num_blocks = 128*4; // * 64; // Número de bloques para leer

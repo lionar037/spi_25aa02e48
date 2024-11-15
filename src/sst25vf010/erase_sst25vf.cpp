@@ -2,7 +2,6 @@
 #include <st25vf010/st25vf010.hpp>
 #include <iostream>
 
-
 namespace ST25VF010{
 
     void St25vf010_t::erase_sector(SPI::Spi_t &spi, uint32_t address) {
@@ -46,7 +45,6 @@ namespace ST25VF010{
             erase_sector(spi, address);
             std::cout << "Sector " << i << " erased." << std::endl;
         }
-
         std::cout << "All sectors erased." << std::endl;
     }
 
@@ -61,9 +59,6 @@ namespace ST25VF010{
 
         spi.erase_sst25_all();
         spi.spi_close();
-        // Borrar toda la memoria flash
-        // erase_entire_memory(spi);
-
         return 0;
     }
 
