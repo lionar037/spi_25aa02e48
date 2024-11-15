@@ -26,6 +26,7 @@ struct St25vf010_t{
         void erase();
 
     protected:
+        void init();
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
     private:
