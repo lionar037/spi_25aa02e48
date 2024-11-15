@@ -10,7 +10,7 @@ namespace SPI{
 
 namespace ST25VF010{
 
-struct St25VF010_t{
+struct St25vf010_t{
     public:
         int read();
         int write();

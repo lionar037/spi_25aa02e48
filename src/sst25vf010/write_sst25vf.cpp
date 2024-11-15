@@ -1,8 +1,10 @@
 #include <spi/spi.hpp>
+#include <st25vf010/st25vf010.hpp>
+#include <iostream>
 
 namespace ST25VF010{
 
-	int St25VF010_t::write() {
+	int St25vf010_t::write() {
 	SPI::Spi_t spi;
 	//spi.writeEnable();
 

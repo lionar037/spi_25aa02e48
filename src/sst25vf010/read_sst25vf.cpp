@@ -1,8 +1,9 @@
 #include <spi/spi.hpp>
+#include <st25vf010/st25vf010.hpp>
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
-
+#include <iostream>
 
 //#define MEMORY_SIZE (32 * 1024) // Tama      o de la memoria en bytes (32 KB)
 
@@ -10,7 +11,7 @@
 
 namespace ST25VF010{
 
-    int St25VF010_t::read() {
+    int St25vf010_t::read() {
         SPI::Spi_t spi;
     int print=0;
         // Verifica si el dispositivo SPI se ha abierto correctamente
