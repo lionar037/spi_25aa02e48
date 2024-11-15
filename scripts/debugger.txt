@@ -1,0 +1,71 @@
+# Establece breakpoints en las líneas deseadas
+#break spi.cc:115
+break spi.cc:189
+break spi.cc:192
+#break spi.cc:155
+break SPACE_SPI::SPI::writeEnable
+#break read_sst25vf.cc:
+break read_sst25vf.cc:32
+
+# Establece un breakpoint en la función read_status
+#break SPACE_SPI::SPI::read_status
+break SPACE_SPI::SPI::read
+#break SPACE_SPI::SPI::read_data2
+break SPACE_SPI::SPI::write
+#break SPACE_SPI::SPI::writeEnable
+break SPACE_SPI::SPI::erase_sst25_all
+#break read_sst25vf.cc:main
+#break SPACE_SPI::SPI::write_data
+
+# Imprime el contenido de tx_buffer y rx_buffer
+# Asegúrate de tener una instancia de la clase SPI en contexto para estos comandos
+
+# Si tienes una instancia específica de SPI (e.g., spi_instance), usa:
+# Imprimir variables privadas de la clase SPI
+print spi_instance.rx_buffer[0]
+print spi_instance.rx_buffer[1]
+print spi_instance.tx_buffer[0]
+print spi_instance.tx_buffer[1]
+print spi_instance.spi_speed
+
+# Imprimir el contenido completo de tx_buffer y rx_buffer en formato hexadecimal
+# Asegúrate de estar en el contexto adecuado para esto, y que tx_buffer y rx_buffer sean accesibles
+x/256xb spi_instance.tx_buffer
+x/256xb spi_instance.rx_buffer
+
+# Alternativamente, si accedes directamente sin instancia, asegúrate de estar en el contexto adecuado
+# para esto y que el código esté correctamente cargado y detenido en un contexto de instancia válida.
+# Por lo general, deberías estar en un contexto donde 'spi_instance' o una instancia similar es válida.
+
+# Continuar la ejecución hasta el siguiente breakpoint
+next
+
+# Continuar la ejecución hasta el próximo breakpoint
+continue
+
+# Finaliza la ejecución de la lista de comandos
+end
+
+# Ejecuta el programa
+run
+
+
+# Verifica el contexto actual
+info stack
+
+
+# Muestra los frames disponibles
+info frame
+
+# Selecciona el frame que deseas inspeccionar
+#frame <numero del frame>
+
+# Verificar variables locales en el frame actual
+info locals
+
+# Verificar variables globales y estáticas
+info variables
+
+
+# Muestra la pila de llamadas
+backtrace
