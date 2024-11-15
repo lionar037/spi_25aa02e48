@@ -49,7 +49,7 @@ namespace ST25VF010{
     }
 
     int St25vf010_t::erase() {
-        SPI::Spi_t spi;
+        
 
         // Verifica si el dispositivo SPI se ha abierto correctamente
         if (!spi.is_open()) {

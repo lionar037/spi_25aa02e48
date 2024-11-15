@@ -8,8 +8,8 @@
 namespace ST25VF010{
 
     int St25vf010_t::read() {
-        SPI::Spi_t spi;
-    int print=0;
+        
+        int print=0;
         // Verifica si el dispositivo SPI se ha abierto correctamente
         if (!spi.is_open()) {
             std::cerr << "Failed to open SPI device." << std::endl;

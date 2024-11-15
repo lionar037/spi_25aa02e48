@@ -4,21 +4,17 @@
 
 namespace ST25VF010{
 
-	int St25vf010_t::write() {
-	SPI::Spi_t spi;
+	int St25vf010_t::write() {	
 
 	uint8_t buffer[4]={0xa1,0xbb,0xcc,0xdd};
 	spi.erase_sst25_all();
 	spi.init_sst25vf();
-
 	spi.read_status();
 
 	for(uint32_t address=0x000000;address < ADDRESS_END;){
-
-	spi.write(address, buffer ,1);
-
-		buffer[0]=rand()%256;
-		address += 1;
+			spi.write(address, buffer ,1);
+			buffer[0]=rand()%256;
+			address += 1;
 		}
 
 		spi.writeDisable();

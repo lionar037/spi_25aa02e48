@@ -23,6 +23,8 @@ struct St25vf010_t{
     protected:
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
+        private:
+        SPI::Spi_t spi;
     };
 
 }// end namespace ST25VF010
