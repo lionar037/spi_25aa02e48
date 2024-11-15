@@ -48,8 +48,8 @@
 namespace SPI{
 
 union statusREGISTER {
-    //struct Register_t{
-    struct {
+    struct statusBits{
+    //struct {
         unsigned int BUSY : 1;
         unsigned int WEL  : 1;
         unsigned int BP0  : 1;
@@ -57,8 +57,8 @@ union statusREGISTER {
         unsigned int RES  : 2;
         unsigned int AAI  : 1;
         unsigned int BPL  : 1;
-    //}REGISTER;
-    };
+    }STATUS;
+    //};
 
     uint8_t byte;  // Permite el acceso directo al byte completo
 };
