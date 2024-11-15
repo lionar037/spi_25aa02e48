@@ -12,10 +12,6 @@
 #include <linux/spi/spidev.h>
 
 
-
-
-
-
 #define     SPI_DEVICE "/dev/spidev0.1"
     
 #define     SPEED               100000
@@ -53,7 +49,6 @@ namespace SPI{
 
 union statusREGISTER {
     struct statusBits{
-    //struct {
         unsigned int BUSY : 1;
         unsigned int WEL  : 1;
         unsigned int BP0  : 1;
@@ -62,8 +57,6 @@ union statusREGISTER {
         unsigned int AAI  : 1;
         unsigned int BPL  : 1;
     }status;
-    //};
-
     uint8_t byte;  // Permite el acceso directo al byte completo
 };
 
@@ -87,7 +80,7 @@ union statusREGISTER {
         void        read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
         void        erase_sst25_all         ();
         uint8_t     read_status             ();
-    protected:
+    public:
         void        handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) ;        
     private:
         void        init                    ();
