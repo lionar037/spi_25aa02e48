@@ -290,25 +290,28 @@ namespace SPI {
         }
     }     
 */
-    void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {       
-       read_write(CMD_WRITE_DATA ,address,vect_buffer);
-    }
-    
-    /*
+    void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) 
+    //{read_write(CMD_WRITE_DATA ,address,vect_buffer);}
     {
         // Asegúrate de habilitar la escritura en el dispositivo SPI
         writeEnable(); 
-
+    size_t total_size = 4 + vect_buffer.size(); // Comando (1 byte) + Dirección (3 bytes) + Datos
+    std::vector <uint8_t>tx_buffer(256,0xff);
+    // Asegurarse de que tx_buffer sea lo suficientemente grande
+    if (tx_buffer.size() < total_size) {
+        tx_buffer.resize(total_size);
+    }
         // Llenar el buffer de transmisión con el comando de escritura y los datos
         tx_buffer[0] = CMD_WRITE;  
         tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
         tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
-        tx_buffer[3] = address & 0xFF;         // Dirección baja
-        tx_buffer[4] = data;                   // El dato que se va a escribir
+        tx_buffer[3] = address & 0xFF;         // Dirección baja                
+
+        std::copy(vect_buffer.begin(), vect_buffer.end(), tx_buffer.begin() + 4);
 
         // Configurar la estructura para la transferencia SPI
         spi_ioc_transfer spi_transfer = {};
-        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer); // Dirección de tx_buffer
+        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer.data()); // Dirección de tx_buffer
         spi_transfer.rx_buf = 0; // No es necesario recibir datos en esta operación
         spi_transfer.len = 5; // Comando + Dirección (3 bytes) + Dato (1 byte)
         spi_transfer.speed_hz = get_spi_speed();
@@ -320,5 +323,5 @@ namespace SPI {
             std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
         }
     }
-*/
+
 }//end namespace spi
