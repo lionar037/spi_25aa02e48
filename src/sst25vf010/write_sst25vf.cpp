@@ -57,14 +57,15 @@ namespace ST25VF010{
 		init();
 
 		uint32_t address=0x00;
-		//spi->writeEnable();
+		spi->writeEnable();
 		spi->write(address, vect_data);
 		address++;
 		//for( ; address < ADDRESS_END ; ) 
 		for( ; address < 0x1ff ; ) {				
-				spi->write_aai(address, vect_data);
-				address += vect_data.size();
 				TYME::delay_ms(1);
+				spi->write(address, vect_data);
+				address += vect_data.size();
+				
 			}
 
 		spi->cmd_byte_spi(WRDI);//1 byte de comando // Write Disable (WRDI) , Instruction to terminate , 
