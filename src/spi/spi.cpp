@@ -290,9 +290,10 @@ namespace SPI {
         }
     }     
 */
-    void Spi_t::write(const uint32_t address, std::vector<uint8_t>&  vect_buffer) {       
+    void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {       
        read_write(CMD_WRITE_DATA ,address,vect_buffer);
     }
+    
     /*
     {
         // Asegúrate de habilitar la escritura en el dispositivo SPI
