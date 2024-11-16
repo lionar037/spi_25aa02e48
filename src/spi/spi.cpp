@@ -166,10 +166,7 @@ namespace SPI {
             throw std::invalid_argument("El buffer proporcionado está vacío.");
             return true;
         }
-
-        // Llamar a read_write con el comando de lectura y la dirección
-        //auto t = read_write(CMD_READ_DATA, address, buffer.data(), buffer.size());
-        
+        // Llamar a read_write con el comando de lectura y la dirección        
         return read_write(CMD_READ_DATA, address, vect);
     }
 
@@ -178,9 +175,9 @@ namespace SPI {
         if (ioctl(fs, SPI_IOC_MESSAGE(2), transfer) < 0) {
             perror("Error al realizar la transferencia SPI");
             throw std::runtime_error("Error en la transferencia SPI");
-            return true;
+        return true;
         }
-        return false;
+    return false;
     }
 
     const bool Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer_received, const uint32_t length) {
@@ -231,27 +228,6 @@ namespace SPI {
         return t;
     }
 
-    void Spi_t::write(uint32_t address, uint8_t* data, const size_t length) {
-            writeEnable(); // Habilitar escritura
-            tx_buffer[0] = CMD_WRITE;
-            tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
-            tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
-            tx_buffer[3] = address & 0xFF;         // Dirección baja
-            spi.len = length + 4; // Comando + Dirección (3 bytes) + Datos (length bytes)
-            //spi.speed_hz = 100000;
-            spi.tx_buf = (unsigned long)tx_buffer;
-            spi.rx_buf = (unsigned long)rx_buffer;
-            spi.speed_hz = get_spi_speed();
-            spi.bits_per_word = 8;
-            spi.cs_change = 0;
-            std::memcpy(tx_buffer + 4, data, length); // Copiar datos a tx_buffer
-            std::memset(rx_buffer,0x00,length + 4);
-        if ((ioctl(fs, SPI_IOC_MESSAGE(1), &spi)) < 0) {
-            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
-        }
-    }
-
-
     const bool Spi_t::read_write(const uint8_t cmd, const uint32_t address, std::vector<uint8_t>& vect) {
         // Inicializar los buffers para el comando
         std::vector<uint8_t> cmd_buffer_tx(vect.size(), 0);
@@ -288,8 +264,37 @@ namespace SPI {
         // Nota: Para lectura, los datos se escribirán directamente en el vector `vect`.
         // Para escritura, el vector `vect` se usará como buffer de transmisión.
     }
-        
+
+    void Spi_t::write(const uint32_t address, uint8_t* buffer_received, const size_t length) 
+    {
+        read_write(CMD_WRITE_DATA ,address,buffer_received,length);
+    }
+    /*
+    {
+            writeEnable(); // Habilitar escritura
+            tx_buffer[0] = CMD_WRITE;
+            tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
+            tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
+            tx_buffer[3] = address & 0xFF;         // Dirección baja
+            spi_ioc_transfer spi_transfer = {};
+            spi_transfer.len = length + 4; // Comando + Dirección (3 bytes) + Datos (length bytes)            
+            spi_transfer.tx_buf = (unsigned long)tx_buffer;
+            spi_transfer.rx_buf = (unsigned long)rx_buffer;
+            spi_transfer.speed_hz = get_spi_speed();
+            spi_transfer.bits_per_word = 8;
+            spi_transfer.cs_change = 0;
+            std::memcpy(tx_buffer + 4, data, length); // Copiar datos a tx_buffer
+            std::memset(rx_buffer,0x00,length + 4);
+        if ((ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer)) < 0) {
+            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
+        }
+    }     
+*/
     void Spi_t::write(const uint32_t address, const uint8_t data) {
+        read_write(CMD_WRITE_DATA ,address,data);
+    }
+    /*
+    {
         // Asegúrate de habilitar la escritura en el dispositivo SPI
         writeEnable(); 
 
@@ -314,5 +319,5 @@ namespace SPI {
             std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
         }
     }
-
+*/
 }//end namespace spi
