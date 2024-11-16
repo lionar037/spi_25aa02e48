@@ -194,7 +194,7 @@ namespace SPI {
         struct spi_ioc_transfer spi_transfer[2] = {};
 
         // Transferencia para el comando                
-        spi_transfer[0].tx_buf = reinterpret_cast<unsigned long>(cmd_buffer_tx);         
+        spi_transfer[0].tx_buf = (unsigned long)cmd_buffer_tx;         
         spi_transfer[0].rx_buf = reinterpret_cast<unsigned long>(nullptr);
         spi_transfer[0].len = 1;
         spi_transfer[0].speed_hz = get_spi_speed();
