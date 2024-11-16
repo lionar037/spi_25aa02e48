@@ -91,8 +91,7 @@ union statusREGISTER {
         void                cmd_byte_spi            (const uint8_t);
         void                writeEnable             () ;      
     protected:                                                                
-        
-          
+        void                configure_spi_transfer  (spi_ioc_transfer &spi_transfer, const uint8_t *tx_buf, uint8_t *rx_buf, size_t len);          
         template <typename BufferType>
         const bool          read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer);
         //const bool          read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);

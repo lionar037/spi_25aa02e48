@@ -85,47 +85,46 @@ namespace SPI {
         cmd_byte_spi(WRDI); //Write-Disable
     }
 
-    void Spi_t::cmd_byte_spi(const uint8_t cmd) {
-        // Inicializar la estructura spi_ioc_transfer
-        spi_ioc_transfer spi_transfer = {};        
+// Función auxiliar para configurar la estructura SPI
+void Spi_t::configure_spi_transfer(spi_ioc_transfer &spi_transfer, const uint8_t *tx_buf, uint8_t *rx_buf, size_t len) {
+    spi_transfer.len = len;
+    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buf);
+    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buf);
+    spi_transfer.speed_hz = get_spi_speed();
+    spi_transfer.bits_per_word = 8;
+    spi_transfer.cs_change = 0;
+}
 
-        // Llenar el buffer de transmisión con el comando
-        tx_buffer[0] = cmd;
+void Spi_t::cmd_byte_spi(const uint8_t cmd) {
+    spi_ioc_transfer spi_transfer = {};  // Reinicializamos la estructura SPI
+    tx_buffer[0] = cmd;
 
-        // Configurar la estructura de transferencia SPI
-        spi_transfer.len = 1;                               // Solo un byte
-        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);  // Dirección del buffer de transmisión
-        spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);  // Dirección del buffer de recepción
-        spi_transfer.speed_hz = get_spi_speed();            // Configuración de velocidad SPI
-        spi_transfer.bits_per_word = 8;                     // Configuración de bits por palabra
-        spi_transfer.cs_change = 0;                         // No cambiar el chip select
-        //spi_transfer.delay_usecs = 0;    
+    // Configurar la transferencia SPI
+    configure_spi_transfer(spi_transfer, tx_buffer, rx_buffer, 1);
 
-        // Ejecutar la transferencia SPI
-        int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer);
-        if (ret < 0) {
-            std::cerr << "Error en EWSR: " << strerror(errno) << " (Código de error: " << ret << ")" << std::endl;
-        }
+    // Ejecutar la transferencia SPI
+    int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer);
+    if (ret < 0) {
+        std::cerr << "Error en EWSR: " << strerror(errno) << " (Código de error: " << ret << ")" << std::endl;
+    }
+}
+
+const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd) {
+    std::memset(&spi, 0, sizeof(spi));  // Reinicializar la estructura SPI
+    tx_buffer[0] = cmd;
+    tx_buffer[1] = 0x00;
+
+    // Configurar la transferencia SPI
+    configure_spi_transfer(spi, tx_buffer, rx_buffer, 2);
+
+    // Ejecutar la transferencia SPI
+    int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi);
+    if (ret < 0) {
+        std::cerr << "Error en WRSR: " << strerror(errno) << std::endl;
     }
 
-    const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd){        
-        std::memset(&spi, 0, sizeof(spi)); // Reinicializar estructura
-        spi.len = 2;
-        tx_buffer[0] = cmd;
-        tx_buffer[1] = 0x00;
-        spi.tx_buf = (unsigned long)tx_buffer;
-        spi.rx_buf = (unsigned long)rx_buffer;
-        spi.speed_hz = get_spi_speed();
-        spi.bits_per_word = 8;
-        spi.cs_change = 0;
-        //spi.delay_usecs = 0;    
-        int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi);
-        if (ret < 0) {
-            std::cerr << "Error en WRSR: " << strerror(errno) << std::endl;
-        }
-        return rx_buffer[1];
-    }// end cmd_byte_spi_duo
-
+    return rx_buffer[1];
+}
 
     const uint8_t Spi_t::read_status(){
         const uint8_t stat = cmd_byte_spi_duo(RDSR);
