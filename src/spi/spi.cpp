@@ -161,8 +161,8 @@ namespace SPI {
         return t;
     }// end read_data
 
-    const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& vect) {
-        if (buffer.empty()) {
+    const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& vect) {        
+        if (vect.empty()) {
             throw std::invalid_argument("El buffer proporcionado está vacío.");
             return true;
         }
