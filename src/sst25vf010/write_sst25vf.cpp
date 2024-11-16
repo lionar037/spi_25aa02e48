@@ -40,7 +40,7 @@ namespace ST25VF010{
 		}
 
 	void St25vf010_t::write() {	
-		std::vector <uint8_t>vect_data(16,0xAE);
+		std::vector <uint8_t>vect_data(256,0xAE);
 		init();
 		
 		for(uint32_t address=0x00 ; address < ADDRESS_END ; ) {

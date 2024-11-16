@@ -304,7 +304,7 @@ namespace SPI {
         std::vector<uint8_t> tx_buffer(total_size);
 
         // Llenar el buffer de transmisión con el comando de escritura y los datos
-        tx_buffer[0] = CMD_WRITE;  
+        tx_buffer[0] = AAI_CMD;  
         tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
         tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
         tx_buffer[3] = address & 0xFF;         // Dirección baja                
