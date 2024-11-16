@@ -69,6 +69,7 @@ union statusREGISTER {
        void        init_sst25vf            ();
         void        write                   (const uint32_t, uint8_t*, const size_t);
         void        read                    (const uint32_t , uint8_t*,const uint32_t);
+        void        read                    (const uint32_t , std::vector<uint8_t>);
         void        erase_sst25_all         ();
         bool        is_open                 ();
         void        spi_close               ();

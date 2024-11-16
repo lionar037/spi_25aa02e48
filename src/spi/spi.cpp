@@ -157,6 +157,10 @@ namespace SPI {
         read_write(CMD_READ_DATA ,address,buffer_received,length);
     }// end read_data
 
+    void Spi_t::read(const uint32_t address, std::vector<uint8_t>vect) {
+        read_write(CMD_READ_DATA ,address,vect);
+    }// end read_data
+
 
     void Spi_t::handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) {
         if (ioctl(fs, SPI_IOC_MESSAGE(2), transfer) < 0) {
