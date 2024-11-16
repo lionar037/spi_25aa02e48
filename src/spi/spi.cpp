@@ -210,7 +210,8 @@ namespace SPI {
         spi_transfer[1].cs_change = 0; // Cambiar a 0 si no es necesario cambiar CS
 
         // Ejecutar transferencias
-        return handle_spi_transfer(spi_transfer, 2);
+        //return 
+        handle_spi_transfer(spi_transfer, 2);
     }
 
     template <typename BufferType>
