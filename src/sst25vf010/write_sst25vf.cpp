@@ -67,8 +67,8 @@ namespace ST25VF010{
 
 		spi->cmd_byte_spi(WRDI);//1 byte de comando // Write Disable (WRDI) , Instruction to terminate , 
 		[[maybe_unused]] auto status = spi->cmd_byte_spi_duo(RDSR);//Read Status Register (RDSR)				
-
-		spi->writeDisable();			
+		std::cout << "status : "<< std::to_string(status)<<"\n";
+		//spi->writeDisable();			
 
 		}
 	
