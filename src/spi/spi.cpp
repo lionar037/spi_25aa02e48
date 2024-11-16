@@ -290,28 +290,33 @@ namespace SPI {
         }
     }     
 */
+
+
+
     void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
         // Asegúrate de habilitar la escritura en el dispositivo SPI
-        writeEnable(); 
-    size_t total_size = 4 + vect_buffer.size(); // Comando (1 byte) + Dirección (3 bytes) + Datos
-    std::vector <uint8_t>tx_buffer(256,0xff);
-    // Asegurarse de que tx_buffer sea lo suficientemente grande
-    if (tx_buffer.size() < total_size) {
-        tx_buffer.resize(total_size);
-    }
+        writeEnable();
+
+        // Calcular el tamaño total necesario para tx_buffer
+        size_t total_size = 4 + vect_buffer.size(); // Comando (1 byte) + Dirección (3 bytes) + Datos
+
+        // Inicializar tx_buffer con el tamaño necesario
+        std::vector<uint8_t> tx_buffer(total_size);
+
         // Llenar el buffer de transmisión con el comando de escritura y los datos
         tx_buffer[0] = CMD_WRITE;  
         tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
         tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
         tx_buffer[3] = address & 0xFF;         // Dirección baja                
 
+        // Copiar los datos desde vect_buffer a tx_buffer
         std::copy(vect_buffer.begin(), vect_buffer.end(), tx_buffer.begin() + 4);
 
         // Configurar la estructura para la transferencia SPI
         spi_ioc_transfer spi_transfer = {};
         spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer.data()); // Dirección de tx_buffer
         spi_transfer.rx_buf = 0; // No es necesario recibir datos en esta operación
-        spi_transfer.len = total_size ; // Comando + Dirección (3 bytes) + Dato (1 byte)
+        spi_transfer.len = total_size; // Comando + Dirección (3 bytes) + Datos
         spi_transfer.speed_hz = get_spi_speed();
         spi_transfer.bits_per_word = 8;
         spi_transfer.cs_change = 0; // No cambiar el CS tras la operación
@@ -321,5 +326,6 @@ namespace SPI {
             std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
         }
     }
+
 
 }//end namespace spi
