@@ -10,7 +10,7 @@ auto st25vf {std::make_unique<ST25VF010::St25vf010_t>()};
 //st25vf->read();
 //st25vf->erase();
 
-st25vf->write();
+st25vf->write_rand();
 st25vf->read();
 
 return 0;    
