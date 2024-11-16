@@ -40,6 +40,7 @@ namespace ST25VF010 {
         }
 
         uint8_t buffer_rd[block_size] = {0};
+        std::vector<uint8_t>vect_buffer_rd(block_size,0);
         std::cout <<"\n";
         // Leer datos de la memoria SPI y guardarlos en el archivo
         for (uint32_t block = 0; block < num_blocks; ++block) {
@@ -48,14 +49,26 @@ namespace ST25VF010 {
             // Leer el bloque de datos desde la memoria SPI
             //spi->read(address, buffer_rd, block_size);
             
-            spi->read(address, buffer_rd);
+            spi->read(address, vect_buffer_rd);
 
-            if (buffer_rd[0]!= 0xae){
+            if (vect_buffer_rd[0] != 0xae){
                 std::cout <<std::to_string(address)<<"\n";
             }
+
+            //auto it = std::find_if(vect_buffer_rd.begin(), vect_buffer_rd.end(), [](uint8_t byte) {
+            //    return byte != 0xAE;
+            //});
+
+            //// Si se encontró un elemento diferente, imprimir la dirección
+            //if (it != vect_buffer_rd.end()) {
+            //    std::cout << "Diferente de 0xAE en dirección: " << std::to_string(address) << "\n";
+            //}
+
             // Escribir el bloque leído en el archivo
-            outputFile.write(reinterpret_cast<char *>(buffer_rd), block_size);
+            //outputFile.write(reinterpret_cast<char *>(buffer_rd), block_size);
+            outputFile.write(reinterpret_cast<const char *>(vect_buffer_rd.data()), vect_buffer_rd.size());
         }
+
         std::cout <<"\n";
         outputFile.close();
         std::cout << "Lectura completa y guardada en " << file_path << std::endl;
