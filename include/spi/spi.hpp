@@ -75,6 +75,7 @@ union statusREGISTER {
 
         void                write                   (const uint32_t , std::vector<uint8_t>& );
         const bool          read                    (const uint32_t , std::vector<uint8_t>& );
+        void                write_aai               (const uint32_t , std::vector<uint8_t>& ) ;
         
         void                erase_sst25_all         ();
         bool                is_open                 ();

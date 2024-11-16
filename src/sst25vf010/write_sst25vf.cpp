@@ -50,5 +50,22 @@ namespace ST25VF010{
 
 			spi->writeDisable();			
 		}
+
+		void St25vf010_t::write_aai() {	
+		std::vector <uint8_t>vect_data(1,0xAE);
+		init();
+
+		uint32_t address=0x00;
+		spi->write(address, vect_data);
+
+		for( ; address < ADDRESS_END ; ) {
+				spi->write_aai(address, vect_data);
+				address += vect_data.size();
+			}
+		spi->cmd_byte_spi_duo(WRDI);// Write Disable (WRDI) , Instruction to terminate , 
+		auto status = spi->cmd_byte_spi_duo(RDSR);//Read Status Register (RDSR)
+		spi->writeDisable();			
+
+		}
 	
 }

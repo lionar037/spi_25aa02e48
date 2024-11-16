@@ -327,5 +327,34 @@ namespace SPI {
         }
     }
 
+    void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
+        // Asegúrate de habilitar la escritura en el dispositivo SPI
+
+        // Calcular el tamaño total necesario para tx_buffer
+        size_t total_size = 1 + vect_buffer.size(); // Comando (1 byte) + Dirección (3 bytes) + Datos
+
+        // Inicializar tx_buffer con el tamaño necesario
+        std::vector<uint8_t> tx_buffer(total_size);
+
+        // Llenar el buffer de transmisión con el comando de escritura y los datos
+        tx_buffer[0] = AAI_CMD;  
+
+        // Copiar los datos desde vect_buffer a tx_buffer
+        std::copy(vect_buffer.begin(), vect_buffer.end(), tx_buffer.begin() + 1);
+
+        // Configurar la estructura para la transferencia SPI
+        spi_ioc_transfer spi_transfer = {};
+        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer.data()); // Dirección de tx_buffer
+        spi_transfer.rx_buf = 0; // No es necesario recibir datos en esta operación
+        spi_transfer.len = total_size; // Comando + Dirección (3 bytes) + Datos
+        spi_transfer.speed_hz = get_spi_speed();
+        spi_transfer.bits_per_word = 8;
+        spi_transfer.cs_change = 0; // No cambiar el CS tras la operación
+
+        // Enviar el comando y los datos a través de SPI
+        if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
+            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
+        }
+    }
 
 }//end namespace spi

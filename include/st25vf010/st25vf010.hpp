@@ -25,6 +25,7 @@ struct St25vf010_t{
 
         void read();
         void write();
+        void write_aai();
         void write(const uint8_t);
         void write_rand();
         void erase();
