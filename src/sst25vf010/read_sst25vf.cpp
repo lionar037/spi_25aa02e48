@@ -39,7 +39,8 @@ namespace ST25VF010 {
             return;
         }
 
-        uint8_t buffer_rd[block_size] = {0};
+        [[maybe_unused]]uint8_t buffer_rd[block_size] = {0};
+
         std::vector<uint8_t>vect_buffer_rd(block_size,0);
         std::cout <<"\n";
         // Leer datos de la memoria SPI y guardarlos en el archivo
