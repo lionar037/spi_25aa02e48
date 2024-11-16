@@ -88,8 +88,8 @@ namespace SPI {
 
     void Spi_t::cmd_byte_spi(const uint8_t cmd) {
         std::memset(&spi, 0, sizeof(spi)); // Inicializar estructura
-        std::memset(rx_buffer, 0xff, LARGE_SECTOR_SIZE);
-        std::memset(tx_buffer, 0xff, LARGE_SECTOR_SIZE);
+        //std::memset(rx_buffer, 0x00, LARGE_SECTOR_SIZE);
+        //std::memset(tx_buffer, 0x00, LARGE_SECTOR_SIZE);
 
         spi.len = 1;
         tx_buffer[0] = cmd;
@@ -285,23 +285,30 @@ namespace SPI {
         // Nota: Para lectura, los datos se escribirán directamente en el vector `vect`.
         // Para escritura, el vector `vect` se usará como buffer de transmisión.
     }
+void Spi_t::write(const uint32_t address, const uint8_t data) {
+    // Asegúrate de habilitar la escritura en el dispositivo SPI
+    writeEnable(); 
 
-    void Spi_t::write(const uint32_t address, const uint8_t data) {
-            writeEnable(); // Habilitar escritura
-            tx_buffer[0] = CMD_WRITE;
-            tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
-            tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
-            tx_buffer[3] = address & 0xFF;         // Dirección baja
-            tx_buffer[4] = data;
-            spi.len = 5; // Comando + Dirección (3 bytes) + Datos (length bytes)            
-            spi.tx_buf = (unsigned long)tx_buffer;
-            spi.rx_buf = (unsigned long)rx_buffer;
-            spi.speed_hz = get_spi_speed();
-            spi.bits_per_word = 8;
-            spi.cs_change = 0;
+    // Llenar el buffer de transmisión con el comando de escritura y los datos
+    tx_buffer[0] = CMD_WRITE;  
+    tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
+    tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
+    tx_buffer[3] = address & 0xFF;         // Dirección baja
+    tx_buffer[4] = data;                   // El dato que se va a escribir
 
-        if ((ioctl(fs, SPI_IOC_MESSAGE(1), &spi)) < 0) {
-            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
-        }
+    // Configurar la estructura para la transferencia SPI
+    spi_ioc_transfer spi_transfer = {};
+    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer); // Dirección de tx_buffer
+    spi_transfer.rx_buf = 0; // No es necesario recibir datos en esta operación
+    spi_transfer.len = 5; // Comando + Dirección (3 bytes) + Dato (1 byte)
+    spi_transfer.speed_hz = get_spi_speed();
+    spi_transfer.bits_per_word = 8;
+    spi_transfer.cs_change = 0; // No cambiar el CS tras la operación
+
+    // Enviar el comando y los datos a través de SPI
+    if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
+        std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
     }
+}
+
 }//end namespace spi
