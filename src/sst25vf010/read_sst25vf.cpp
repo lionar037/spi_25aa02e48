@@ -72,7 +72,8 @@ namespace ST25VF010 {
         }
 
         const uint32_t block_size = 256;    // Tamaño del bloque en bytes
-        const uint32_t num_blocks = 128 * 4; // Número de bloques para leer
+        //const uint32_t num_blocks = 128 * 4; // Número de bloques para leer
+        const uint32_t num_blocks = (MEMORY_SIZE + block_size - 1) / block_size; // Ajustar según tamaño real
 
         // Define la carpeta y archivo de salida
         std::string folder = "files";
@@ -107,7 +108,7 @@ namespace ST25VF010 {
             // Escribir el bloque leído en el archivo
             outputFile.write(reinterpret_cast<char *>(buffer_rd), block_size);
         }
- std::cout <<"\n";
+        std::cout <<"\n";
         outputFile.close();
         std::cout << "Lectura completa y guardada en " << file_path << std::endl;
     }
