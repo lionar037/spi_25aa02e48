@@ -162,10 +162,12 @@ namespace SPI {
     const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& buffer) {
         if (buffer.empty()) {
             throw std::invalid_argument("El buffer proporcionado está vacío.");
+            return true;
         }
 
         // Llamar a read_write con el comando de lectura y la dirección
-        read_write(CMD_READ_DATA, address, buffer.data(), buffer.size());
+        auto t = read_write(CMD_READ_DATA, address, buffer.data(), buffer.size());
+        return t;
     }
 
 
