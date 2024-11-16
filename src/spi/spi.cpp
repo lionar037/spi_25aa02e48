@@ -130,8 +130,7 @@ namespace SPI {
         const uint8_t stat = cmd_byte_spi_duo(RDSR);
     
         [[maybe_unused]]statusREGISTER statReg;
-        statReg.byte = stat;
-    
+        statReg.byte = stat;    
     #ifdef DBG_SPI
         // Accede a los campos dentro de la estructura 'status'
         std::cout << " BP0 : " << statReg.status.BP0 << " BP1 : " << statReg.status.BP1 << std::endl;
@@ -155,208 +154,72 @@ namespace SPI {
     return 0x00;
     }// end get_fs
 
-
-    const bool Spi_t::read(const uint32_t address, uint8_t* buffer_received,const uint32_t length) {
-        auto t = read_write(CMD_READ_DATA ,address,buffer_received,length);
-        return t;
-    }// end read_data
-
-    const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& vect) {        
-        if (vect.empty()) {
-            throw std::invalid_argument("El buffer proporcionado está vacío.");
-            return true;
-        }
-        // Llamar a read_write con el comando de lectura y la dirección        
-        return read_write(CMD_READ_DATA, address, vect);
-    }
-
-
-    const bool Spi_t::handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) {
-        if (ioctl(fs, SPI_IOC_MESSAGE(2), transfer) < 0) {
-            perror("Error al realizar la transferencia SPI");
-            throw std::runtime_error("Error en la transferencia SPI");
-        return true;
-        }
-    return false;
-    }
-
-    const bool Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer_received, const uint32_t length) {
-        // Inicializar los buffers
-        std::vector<uint8_t> cmd_buffer_tx(4, 0);
-        std::vector<uint8_t> cmd_buffer_rx(4, 0);
-        std::vector<uint8_t> tx_buffer_tmp(length, 0xFF);
-        std::vector<uint8_t> rx_buffer_tmp(length, 0xFF);
-
-        // Llenar el buffer de transmisión con el comando de lectura y la dirección
-        cmd_buffer_tx[0] = cmd;
-        cmd_buffer_tx[1] = (address >> 16) & 0xFF;  // Dirección alta
-        cmd_buffer_tx[2] = (address >> 8) & 0xFF;   // Dirección media
-        cmd_buffer_tx[3] = address & 0xFF;          // Dirección baja
-
-        // Configurar las transferencias SPI
-        struct spi_ioc_transfer spi_transfer[2] = {};
-
-        // Transferencia para enviar el comando de lectura y la dirección
-        spi_transfer[0].tx_buf = reinterpret_cast<unsigned long>(cmd_buffer_tx.data());
-        spi_transfer[0].rx_buf = reinterpret_cast<unsigned long>(cmd_buffer_rx.data());
-        spi_transfer[0].len = 4;
-        spi_transfer[0].speed_hz = get_spi_speed();
-        spi_transfer[0].bits_per_word = 8;
-        spi_transfer[0].cs_change = 0;
-
-        // Transferencia para enviar/recibir los datos
-        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(tx_buffer_tmp.data());
-        spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(rx_buffer_tmp.data());
-        spi_transfer[1].len = length;
-        spi_transfer[1].speed_hz = get_spi_speed();
-        spi_transfer[1].bits_per_word = 8;
-        spi_transfer[1].cs_change = 1;
-
-        // Copiar los datos al buffer de transmisión para escribir
-        if (cmd == CMD_WRITE_DATA) {
-            std::memcpy(tx_buffer_tmp.data(), buffer_received, length);
+    template <typename BufferType>
+    const bool 
+    Spi_t::read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer) {
+        // Verificar si el buffer es válido
+        if constexpr (std::is_same_v<BufferType, std::vector<uint8_t>>) {
+            if (buffer.empty()) {
+                throw std::invalid_argument("El buffer proporcionado está vacío.");
+            }
         }
 
-        // Ejecutar ambas transferencias SPI
-        auto t = handle_spi_transfer(spi_transfer, 2);
+    // Calcular tamaños
+    const size_t length = std::is_same_v<BufferType, std::vector<uint8_t>> ? buffer.size() : sizeof(buffer);
+    const size_t cmd_size = 4;
 
-        // Copiar los datos recibidos al buffer de lectura
-        if (cmd == CMD_READ_DATA) {
-            std::memcpy(buffer_received, rx_buffer_tmp.data(), length);
-        }
-        
-        return t;
-    }
+    // Crear buffers para el comando y datos temporales
+    std::vector<uint8_t> cmd_buffer_tx(cmd_size, 0);
+    std::vector<uint8_t> cmd_buffer_rx(cmd_size, 0);
 
-    const bool Spi_t::read_write(const uint8_t cmd, const uint32_t address, std::vector<uint8_t>& vect) {
-        // Inicializar los buffers para el comando
-        std::vector<uint8_t> cmd_buffer_tx(vect.size(), 0);
-        std::vector<uint8_t> cmd_buffer_rx(vect.size(), 0);
+    // Llenar el buffer de comando
+    cmd_buffer_tx[0] = cmd;
+    cmd_buffer_tx[1] = (address >> 16) & 0xFF;
+    cmd_buffer_tx[2] = (address >> 8) & 0xFF;
+    cmd_buffer_tx[3] = address & 0xFF;
 
-        // Llenar el buffer de transmisión con el comando y la dirección
-        cmd_buffer_tx[0] = cmd;
-        cmd_buffer_tx[1] = (address >> 16) & 0xFF;  // Dirección alta
-        cmd_buffer_tx[2] = (address >> 8) & 0xFF;   // Dirección media
-        cmd_buffer_tx[3] = address & 0xFF;          // Dirección baja
+    // Configurar las transferencias SPI
+    struct spi_ioc_transfer spi_transfer[2] = {};
 
-        // Configurar las transferencias SPI
-        struct spi_ioc_transfer spi_transfer[2] = {};
+    // Transferencia para el comando
+    spi_transfer[0].tx_buf = reinterpret_cast<unsigned long>(cmd_buffer_tx.data());
+    spi_transfer[0].rx_buf = reinterpret_cast<unsigned long>(cmd_buffer_rx.data());
+    spi_transfer[0].len = cmd_size;
+    spi_transfer[0].speed_hz = get_spi_speed();
+    spi_transfer[0].bits_per_word = 8;
 
-        // Transferencia para enviar el comando y la dirección
-        spi_transfer[0].tx_buf = reinterpret_cast<unsigned long>(cmd_buffer_tx.data());
-        spi_transfer[0].rx_buf = reinterpret_cast<unsigned long>(cmd_buffer_rx.data());
-        spi_transfer[0].len = cmd_buffer_tx.size();
-        spi_transfer[0].speed_hz = get_spi_speed();
-        spi_transfer[0].bits_per_word = 8;
-        spi_transfer[0].cs_change = 0;
+    // Transferencia para los datos
+    spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(
+        cmd == CMD_WRITE_DATA ? buffer.data() : nullptr);
+    spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(
+        cmd == CMD_READ_DATA ? buffer.data() : nullptr);
+    spi_transfer[1].len = length;
+    spi_transfer[1].speed_hz = get_spi_speed();
+    spi_transfer[1].bits_per_word = 8;
+    spi_transfer[1].cs_change = 1;
 
-        // Transferencia para enviar/recibir datos usando el vector
-        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == CMD_WRITE_DATA ? vect.data() : nullptr);
-        spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(cmd == CMD_READ_DATA ? vect.data() : nullptr);
-        spi_transfer[1].len = vect.size();
-        spi_transfer[1].speed_hz = get_spi_speed();
-        spi_transfer[1].bits_per_word = 8;
-        spi_transfer[1].cs_change = 1;
+    // Ejecutar transferencias
+    return handle_spi_transfer(spi_transfer, 2);
+}
 
-        // Ejecutar ambas transferencias SPI
-        return handle_spi_transfer(spi_transfer, 2);
+const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& vect) {
+    return read_write(CMD_READ_DATA, address, vect);
+}
 
-        // Nota: Para lectura, los datos se escribirán directamente en el vector `vect`.
-        // Para escritura, el vector `vect` se usará como buffer de transmisión.
-    }
+const bool Spi_t::read(const uint32_t address, uint8_t* buffer, const uint32_t length) {
+    std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
+    return read_write(CMD_READ_DATA, address, tmp_buffer);
+}
 
-    void Spi_t::write(const uint32_t address, uint8_t* buffer_received, const size_t length) 
-    {
-        writeEnable(); 
-        read_write(CMD_WRITE_DATA ,address,buffer_received,length);
-    }
-    /*
-    {
-            writeEnable(); // Habilitar escritura
-            tx_buffer[0] = CMD_WRITE;
-            tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
-            tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
-            tx_buffer[3] = address & 0xFF;         // Dirección baja
-            spi_ioc_transfer spi_transfer = {};
-            spi_transfer.len = length + 4; // Comando + Dirección (3 bytes) + Datos (length bytes)            
-            spi_transfer.tx_buf = (unsigned long)tx_buffer;
-            spi_transfer.rx_buf = (unsigned long)rx_buffer;
-            spi_transfer.speed_hz = get_spi_speed();
-            spi_transfer.bits_per_word = 8;
-            spi_transfer.cs_change = 0;
-            std::memcpy(tx_buffer + 4, data, length); // Copiar datos a tx_buffer
-            std::memset(rx_buffer,0x00,length + 4);
-        if ((ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer)) < 0) {
-            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
-        }
-    }     
-*/
+void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
+    writeEnable();
+    read_write(CMD_WRITE_DATA, address, vect_buffer);
+}
 
-
-
-    void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) 
-    {
-        // Asegúrate de habilitar la escritura en el dispositivo SPI
-        writeEnable();
-
-        // Calcular el tamaño total necesario para tx_buffer
-        size_t total_size = 4 + vect_buffer.size(); // Comando (1 byte) + Dirección (3 bytes) + Datos
-
-        // Inicializar tx_buffer con el tamaño necesario
-        std::vector<uint8_t> tx_buffer(total_size);
-
-        // Llenar el buffer de transmisión con el comando de escritura y los datos
-        tx_buffer[0] = AAI_CMD;  
-        tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
-        tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
-        tx_buffer[3] = address & 0xFF;         // Dirección baja                
-
-        // Copiar los datos desde vect_buffer a tx_buffer
-        std::copy(vect_buffer.begin(), vect_buffer.end(), tx_buffer.begin() + 4);
-
-        // Configurar la estructura para la transferencia SPI
-        spi_ioc_transfer spi_transfer = {};
-        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer.data()); // Dirección de tx_buffer
-        spi_transfer.rx_buf = 0; // No es necesario recibir datos en esta operación
-        spi_transfer.len = total_size; // Comando + Dirección (3 bytes) + Datos
-        spi_transfer.speed_hz = get_spi_speed();
-        spi_transfer.bits_per_word = 8;
-        spi_transfer.cs_change = 0; // No cambiar el CS tras la operación
-
-        // Enviar el comando y los datos a través de SPI
-        if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
-        }
-    }
-
-    void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
-        // Asegúrate de habilitar la escritura en el dispositivo SPI
-
-        // Calcular el tamaño total necesario para tx_buffer
-        size_t total_size = 1 + vect_buffer.size(); // Comando (1 byte) + Dirección (3 bytes) + Datos
-
-        // Inicializar tx_buffer con el tamaño necesario
-        std::vector<uint8_t> tx_buffer(total_size);
-
-        // Llenar el buffer de transmisión con el comando de escritura y los datos
-        tx_buffer[0] = AAI_CMD;  
-
-        // Copiar los datos desde vect_buffer a tx_buffer
-        std::copy(vect_buffer.begin(), vect_buffer.end(), tx_buffer.begin() + 1);
-
-        // Configurar la estructura para la transferencia SPI
-        spi_ioc_transfer spi_transfer = {};
-        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer.data()); // Dirección de tx_buffer
-        spi_transfer.rx_buf = 0; // No es necesario recibir datos en esta operación
-        spi_transfer.len = total_size; // Comando + Dirección (3 bytes) + Datos
-        spi_transfer.speed_hz = get_spi_speed();
-        spi_transfer.bits_per_word = 8;
-        spi_transfer.cs_change = 0; // No cambiar el CS tras la operación
-
-        // Enviar el comando y los datos a través de SPI
-        if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
-        }
-    }
+void Spi_t::write(const uint32_t address, uint8_t* buffer, const size_t length) {
+    writeEnable();
+    std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
+    read_write(CMD_WRITE_DATA, address, tmp_buffer);
+}
 
 }//end namespace spi

@@ -51,10 +51,6 @@ namespace ST25VF010 {
             //spi->read(address, buffer_rd, block_size);            
             spi->read(address, vect_buffer_rd);
 
-            //if (vect_buffer_rd[0] != 0xae){
-            //    std::cout <<std::to_string(address)<<"\n";
-            //}
-
             auto it = std::find_if(vect_buffer_rd.begin(), vect_buffer_rd.end(), [](uint8_t byte) {
                 return byte != 0xAE;
             });

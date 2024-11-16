@@ -90,8 +90,10 @@ union statusREGISTER {
     protected:                                                                
         
         void                writeEnable             () ;        
-        const bool          read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
-        const bool          read_write              (const uint8_t , const uint32_t , std::vector<uint8_t>& ) ;
+        template <typename BufferType>
+        const bool          read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer);
+        //const bool          read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
+        //const bool          read_write              (const uint8_t , const uint32_t , std::vector<uint8_t>& ) ;
         const bool          handle_spi_transfer     (const struct spi_ioc_transfer* transfer, size_t length) ;        
     private:
         void                init                    ();
