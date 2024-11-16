@@ -23,21 +23,21 @@ namespace SPI {
             exit(EXIT_FAILURE);
         }
 
-        uint32_t mode = SPI_MODE_0;
+        const uint32_t mode = SPI_MODE_0;
         if (ioctl(fs, SPI_IOC_WR_MODE, &mode) < 0) {
             perror("Could not set SPI mode");
             close(fs);
             exit(EXIT_FAILURE);
         }
 
-        uint32_t speed = spi_speed;
+        const uint32_t speed = spi_speed;
         if (ioctl(fs, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
             perror("Could not set SPI max speed");
             close(fs);
             exit(EXIT_FAILURE);
         }
 
-        uint8_t bits = 8;
+        const uint8_t bits = 8;
         if (ioctl(fs, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
             perror("Could not set SPI bits per word");
             close(fs);
@@ -124,7 +124,7 @@ namespace SPI {
 
 
     const uint8_t Spi_t::read_status(){
-        uint8_t stat = cmd_byte_spi_duo(RDSR);
+        const uint8_t stat = cmd_byte_spi_duo(RDSR);
     
         [[maybe_unused]]statusREGISTER statReg;
         statReg.byte = stat;
