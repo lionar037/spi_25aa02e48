@@ -1,6 +1,8 @@
 #!/bin/bash
 
 DIR=files
+
+CMD="| head -n 10"
 # Detectar el sistema operativo
 os_name=$(uname)
 
@@ -57,10 +59,14 @@ fi
 
 #verificar si el archivo existe pero no está vacío
 if [[ -s $FILES_GEN ]];then 
-    hexdump -C $FILES_GEN
+    hexdump -C $FILES_GEN | head -n 10
 fi
 
 ./scripts/cmd_winbond.sh  read
+
+FILES_GEN=$DIR/st25vf010a_flashrom.bin
+
+hexdump -C $FILES_GEN $CMD
 
 #python3 scripts/python_compare/compare.py 
 

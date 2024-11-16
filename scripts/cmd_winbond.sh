@@ -24,7 +24,7 @@ case $CMD in
     read)
         echo "Leyendo desde la memoria..."
         flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -r "$LINK"
-        hexdump -C $LINK
+        #hexdump -C $LINK 
         ;;
     write)
         echo "Escribiendo en la memoria..."
