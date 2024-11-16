@@ -30,8 +30,7 @@ namespace ST25VF010{
 	void St25vf010_t::write() {	
 		uint8_t buffer[4]={0xae,0xbb,0xcc,0xdd};
 		init();
-		for(uint32_t address=0x000000;address < ADDRESS_END;++address)
-				spi->write(address, buffer ,1);				
+		for(uint32_t address=0x00;address < ADDRESS_END;++address) spi->write(address, buffer ,1);				
 									
 			spi->writeDisable();			
 		}
