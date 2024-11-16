@@ -52,8 +52,7 @@ namespace ST25VF010{
         
         // Verifica si el dispositivo SPI se ha abierto correctamente
         if (!spi->is_open()) {
-            std::cerr << "Failed to open SPI device." << std::endl;
-        //  return 1;
+            std::cerr << "Failed to open SPI device." << std::endl;        
         }
         spi->erase_sst25_all();
         spi->spi_close();        
