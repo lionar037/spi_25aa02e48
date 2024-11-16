@@ -56,9 +56,9 @@ namespace ST25VF010{
 		init();
 
 		uint32_t address=0x00;
-		spi->writeEnable();
-		spi->write(address, vect_data);
-		address++;
+		//spi->writeEnable();
+		//spi->write(address, vect_data);
+		//address++;
 		for( ; address < ADDRESS_END ; ) 
 		//for( ; address < 0x1fff ; ) 
 			{				
