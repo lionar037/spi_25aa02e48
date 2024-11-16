@@ -39,7 +39,7 @@ namespace ST25VF010 {
             return;
         }
 
-        [[maybe_unused]]uint8_t buffer_rd[block_size] = {0};
+        //s[[maybe_unused]]uint8_t buffer_rd[block_size] = {0};
 
         std::vector<uint8_t>vect_buffer_rd(block_size,0);
         std::cout <<"\n";
@@ -48,22 +48,21 @@ namespace ST25VF010 {
             uint32_t address = block * block_size; // Dirección de inicio para cada bloque
 
             // Leer el bloque de datos desde la memoria SPI
-            //spi->read(address, buffer_rd, block_size);
-            
+            //spi->read(address, buffer_rd, block_size);            
             spi->read(address, vect_buffer_rd);
 
-            if (vect_buffer_rd[0] != 0xae){
-                std::cout <<std::to_string(address)<<"\n";
-            }
+            //if (vect_buffer_rd[0] != 0xae){
+            //    std::cout <<std::to_string(address)<<"\n";
+            //}
 
-            //auto it = std::find_if(vect_buffer_rd.begin(), vect_buffer_rd.end(), [](uint8_t byte) {
-            //    return byte != 0xAE;
-            //});
+            auto it = std::find_if(vect_buffer_rd.begin(), vect_buffer_rd.end(), [](uint8_t byte) {
+                return byte != 0xAE;
+            });
 
             //// Si se encontró un elemento diferente, imprimir la dirección
-            //if (it != vect_buffer_rd.end()) {
-            //    std::cout << "Diferente de 0xAE en dirección: " << std::to_string(address) << "\n";
-            //}
+            if (it != vect_buffer_rd.end()) {
+                std::cout << "Diferente de 0xAE en dirección: " << std::to_string(address) << "\n";
+            }
 
             // Escribir el bloque leído en el archivo
             //outputFile.write(reinterpret_cast<char *>(buffer_rd), block_size);
