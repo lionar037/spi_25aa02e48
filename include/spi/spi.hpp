@@ -85,9 +85,10 @@ union statusREGISTER {
         const uint8_t       read_status             ();
         const uint8_t       cmd_byte_spi_duo        (const uint8_t);
         void                writeDisable            ();
-
-    protected:                                                                
         void                cmd_byte_spi            (const uint8_t);
+        
+    protected:                                                                
+        
         void                writeEnable             () ;        
         const bool          read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
         const bool          read_write              (const uint8_t , const uint32_t , std::vector<uint8_t>& ) ;
