@@ -267,6 +267,7 @@ namespace SPI {
 
     void Spi_t::write(const uint32_t address, uint8_t* buffer_received, const size_t length) 
     {
+        writeEnable(); 
         read_write(CMD_WRITE_DATA ,address,buffer_received,length);
     }
     /*
@@ -294,10 +295,6 @@ namespace SPI {
 
 
     void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) 
-    {
-        read_write(AAI_CMD ,address,vect_buffer.data(),vect_buffer.size());
-    }
-    /*
     {
         // Asegúrate de habilitar la escritura en el dispositivo SPI
         writeEnable();
@@ -331,7 +328,7 @@ namespace SPI {
             std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
         }
     }
-*/
+
     void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
         // Asegúrate de habilitar la escritura en el dispositivo SPI
 
