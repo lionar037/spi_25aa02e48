@@ -18,7 +18,7 @@ endif()
 # Especificar los archivos fuente
 set(SOURCES
     src/main.cpp
-    src/other_file.cpp
+    src/*/*.cpp
 )
 
 # Configuración de compilador

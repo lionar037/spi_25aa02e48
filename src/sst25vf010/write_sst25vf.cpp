@@ -1,5 +1,6 @@
 #include <spi/spi.hpp>
 #include <st25vf010/st25vf010.hpp>
+#include <tyme/tyme.hpp>
 #include <iostream>
 
 namespace ST25VF010{
@@ -60,10 +61,10 @@ namespace ST25VF010{
 		//spi->write(address, vect_data);
 		//address++;
 		//for( ; address < ADDRESS_END ; ) 
-		for( ; address < 0x1fff ; ) 
-			{				
+		for( ; address < 0x1ff ; ) {				
 				spi->write_aai(address, vect_data);
 				address += vect_data.size();
+				TYME::delay_ms(1);
 			}
 
 		spi->cmd_byte_spi(WRDI);//1 byte de comando // Write Disable (WRDI) , Instruction to terminate , 
