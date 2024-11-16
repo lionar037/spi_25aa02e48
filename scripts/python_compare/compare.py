@@ -31,7 +31,7 @@ def compare_files(file1, file2):
 
 
 # Replace with your file paths
-file1 = "25vf010a.bin"
-file2 = "st25vf010a_flashrom.bin"
+file1 = "files/25vf010a.bin"
+file2 = "files/st25vf010a_flashrom.bin"
 
 compare_files(file1, file2)
