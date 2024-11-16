@@ -290,8 +290,9 @@ namespace SPI {
         }
     }     
 */
-    void Spi_t::write(const uint32_t address, const uint8_t data) {
-        read_write(CMD_WRITE_DATA ,address,data);
+    void Spi_t::write(const uint32_t address, const uint8_t buffer_received) {
+       // read_write(CMD_WRITE_DATA ,address,data);
+       read_write(CMD_WRITE_DATA ,address,buffer_received,sizeof(buffer_received));
     }
     /*
     {
