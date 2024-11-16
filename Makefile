@@ -85,7 +85,7 @@ else
     INCDIRS := -I$(SRC) -I$(LIBDIR)
 endif
 
-LIBS += -pthread -lbcm2835
+#LIBS += -pthread -lbcm2835
 
 # Detectar la arquitectura del sistema
 ifeq ($(ARCH),x86_64)
