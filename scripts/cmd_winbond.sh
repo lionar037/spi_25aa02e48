@@ -24,6 +24,7 @@ case $CMD in
     read)
         echo "Leyendo desde la memoria..."
         flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -r "$LINK"
+        hexdump -C $LINK
         ;;
     write)
         echo "Escribiendo en la memoria..."
@@ -32,6 +33,8 @@ case $CMD in
     erase)
         echo "Borrando toda la memoria..."
         flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -E
+        #flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -r "$LINK"
+        #hexdump -C $LINK
         ;;
     *)
         echo "Comando inválido. Uso: $0 {read|write|erase}"
