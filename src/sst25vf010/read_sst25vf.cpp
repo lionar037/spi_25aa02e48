@@ -46,7 +46,7 @@ namespace ST25VF010 {
             // Leer el bloque de datos desde la memoria SPI
             spi.read(address, buffer_rd, block_size);
             if (buffer_rd[0]!= 0xae){
-                std::cout <<".";
+                std::cout <<std::to_string(address)<<"\n";
             }
             // Escribir el bloque leído en el archivo
             outputFile.write(reinterpret_cast<char *>(buffer_rd), block_size);
