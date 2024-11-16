@@ -1,6 +1,5 @@
 //codigo spi.cpp
 #include <spi/spi.hpp>
-#include <spi/spi.tpp>
 #include <iomanip> 
 #include <cstring>
 #include <stdexcept>
