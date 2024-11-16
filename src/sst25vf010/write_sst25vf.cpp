@@ -41,7 +41,7 @@ namespace ST25VF010{
 
 	void St25vf010_t::write() {	
 		//const uint8_t data=0xae;
-		std::vector <uint8_t>vect_data(256,0xAE);
+		std::vector <uint8_t>vect_data(1,0xAE);
 		init();
 		
 		for(uint32_t address=0x00 ; address < ADDRESS_END ; ) {
