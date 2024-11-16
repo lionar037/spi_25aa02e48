@@ -183,7 +183,7 @@ namespace SPI {
     }
 
     void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
-        //writeEnable();
+        writeEnable();
         //read_write(CMD_WRITE_DATA, address, vect_buffer);//
         read_write(BYTE_PROGRAM, address, vect_buffer);
     }
