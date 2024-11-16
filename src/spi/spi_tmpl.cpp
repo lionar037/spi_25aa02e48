@@ -4,8 +4,6 @@
 #include <cstring>
 #include <stdexcept>
 
-
-
 namespace SPI{
 
     template <typename BufferType>
