@@ -172,6 +172,7 @@ namespace SPI {
             if constexpr (std::is_same_v<BufferType, std::vector<uint8_t>>) {
                 if (buffer.empty()) {
                     throw std::invalid_argument("El buffer proporcionado está vacío.");
+                    return true;
                 }
             }
 
@@ -201,7 +202,8 @@ namespace SPI {
 
         // Transferencia para los datos
         spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(
-        cmd == CMD_WRITE_DATA ? buffer.data() : nullptr);
+        //cmd == CMD_WRITE_DATA ? buffer.data() : nullptr);
+        cmd == AAI_CMD ? buffer.data() : nullptr);        
         spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(
         cmd == CMD_READ_DATA ? buffer.data() : nullptr);
         spi_transfer[1].len = length;
