@@ -1,4 +1,5 @@
 //codigo spi.tpp
+
 //#include <spi/spi.hpp>
 #include <iomanip> 
 #include <cstring>
