@@ -61,7 +61,7 @@ namespace ST25VF010{
 		for( ; address < ADDRESS_END ; ) 
 		//for( ; address < 0x1fff ; ) 
 			{				
-				spi->write(address, vect_data);
+				spi->write_aai(address, vect_data);
 				address += vect_data.size();
 			}
 

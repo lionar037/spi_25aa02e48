@@ -222,15 +222,22 @@ namespace SPI {
         return read_write(CMD_READ_DATA, address, tmp_buffer);
     }
 
-    void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
-        writeEnable();
-        read_write(CMD_WRITE_DATA, address, vect_buffer);
-    }
 
     void Spi_t::write(const uint32_t address, uint8_t* buffer, const size_t length) {
         writeEnable();
         std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
         read_write(CMD_WRITE_DATA, address, tmp_buffer);
     }
+
+        void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
+        writeEnable();
+        read_write(AAI_CMD, address, vect_buffer);
+    }
+
+        void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
+        //writeEnable();
+        read_write(AAI_CMD, address, vect_buffer);
+    }
+
 
 }//end namespace spi
