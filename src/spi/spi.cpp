@@ -2,7 +2,7 @@
 #include <spi/spi.hpp>
 #include <iomanip> 
 #include <cstring>
-#include <vector>
+//#include <vector>
 #include <stdexcept>
 
 namespace SPI {
@@ -158,9 +158,14 @@ namespace SPI {
         read_write(CMD_READ_DATA ,address,buffer_received,length);
     }// end read_data
 
-    void Spi_t::read(const uint32_t address, std::vector<uint8_t>vect) {
-        read_write(CMD_READ_DATA ,address,vect);
-    }// end read_data
+    void SPI::Spi_t::read(const uint32_t address, std::vector<uint8_t>& buffer) {
+        if (buffer.empty()) {
+            throw std::invalid_argument("El buffer proporcionado está vacío.");
+        }
+
+        // Llamar a read_write con el comando de lectura y la dirección
+        read_write(CMD_READ_DATA, address, buffer.data(), buffer.size());
+    }
 
 
     void Spi_t::handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) {
