@@ -193,8 +193,11 @@ const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd) {
             return;
         }
 
-        std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
-        std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
+        std::vector <uint8_t>tx_buffer_vect(256,0xff);
+        std::vector <uint8_t>rx_buffer_vect(256,0xff);
+        
+        //std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
+        //std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
 
         //uint8_t cmd = BYTE_PROGRAM;  // Comando de escritura
         tx_buffer[0] = BYTE_PROGRAM;
