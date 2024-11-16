@@ -235,7 +235,7 @@ namespace SPI {
             tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
             tx_buffer[3] = address & 0xFF;         // Dirección baja
             spi.len = length + 4; // Comando + Dirección (3 bytes) + Datos (length bytes)
-            spi.speed_hz = 100000;
+            //spi.speed_hz = 100000;
             spi.tx_buf = (unsigned long)tx_buffer;
             spi.rx_buf = (unsigned long)rx_buffer;
             spi.speed_hz = get_spi_speed();
@@ -286,5 +286,22 @@ namespace SPI {
         // Para escritura, el vector `vect` se usará como buffer de transmisión.
     }
 
+    void Spi_t::write(const uint32_t address, const uint8_t data) {
+            writeEnable(); // Habilitar escritura
+            tx_buffer[0] = CMD_WRITE;
+            tx_buffer[1] = (address >> 16) & 0xFF; // Dirección alta
+            tx_buffer[2] = (address >> 8) & 0xFF;  // Dirección media
+            tx_buffer[3] = address & 0xFF;         // Dirección baja
+            tx_buffer[4] = data;
+            spi.len = 5; // Comando + Dirección (3 bytes) + Datos (length bytes)            
+            spi.tx_buf = (unsigned long)tx_buffer;
+            spi.rx_buf = (unsigned long)rx_buffer;
+            spi.speed_hz = get_spi_speed();
+            spi.bits_per_word = 8;
+            spi.cs_change = 0;
 
+        if ((ioctl(fs, SPI_IOC_MESSAGE(1), &spi)) < 0) {
+            std::cerr << "write -> Error al escribir en la memoria: " << strerror(errno) << std::endl;
+        }
+    }
 }//end namespace spi
