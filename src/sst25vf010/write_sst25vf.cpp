@@ -61,7 +61,7 @@ namespace ST25VF010{
 		spi->write(address, vect_data);
 		address++;
 		//for( ; address < ADDRESS_END ; ) 
-		for( ; address < 0x1ff ; ) {				
+		for( ; address < 0x1fff ; ) {				
 				TYME::delay_ms(1);
 				spi->write(address, vect_data);
 				address += vect_data.size();

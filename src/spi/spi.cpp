@@ -179,13 +179,13 @@ namespace SPI {
     void Spi_t::write(const uint32_t address, uint8_t* buffer, const size_t length) {
         writeEnable();
         std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
-        read_write(CMD_WRITE_DATA, address, tmp_buffer);
+        read_write(BYTE_PROGRAM, address, tmp_buffer);
     }
 
     void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
         //writeEnable();
         //read_write(CMD_WRITE_DATA, address, vect_buffer);//
-        read_write(AAI_CMD, address, vect_buffer);
+        read_write(BYTE_PROGRAM, address, vect_buffer);
     }
 
     void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {                                        
@@ -252,7 +252,7 @@ namespace SPI {
         spi_transfer[0].delay_usecs = 0;    
         // Transferencia para los datos
         //spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == AAI_CMD ? buffer.data() : nullptr); 
-        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == CMD_WRITE_DATA ? buffer.data() : nullptr); 
+        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == BYTE_PROGRAM ? buffer.data() : nullptr); 
         spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(cmd == CMD_READ_DATA ? buffer.data() : nullptr);
         spi_transfer[1].len = length;
         spi_transfer[1].speed_hz = get_spi_speed();
