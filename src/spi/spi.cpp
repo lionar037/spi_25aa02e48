@@ -154,11 +154,12 @@ namespace SPI {
     }// end get_fs
 
 
-    void Spi_t::read(const uint32_t address, uint8_t* buffer_received,const uint32_t length) {
-        read_write(CMD_READ_DATA ,address,buffer_received,length);
+    const bool Spi_t::read(const uint32_t address, uint8_t* buffer_received,const uint32_t length) {
+        auto t = read_write(CMD_READ_DATA ,address,buffer_received,length);
+        return t;
     }// end read_data
 
-    void Spi_t::read(const uint32_t address, std::vector<uint8_t>& buffer) {
+    const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& buffer) {
         if (buffer.empty()) {
             throw std::invalid_argument("El buffer proporcionado está vacío.");
         }
@@ -168,14 +169,16 @@ namespace SPI {
     }
 
 
-    void Spi_t::handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) {
+    const bool Spi_t::handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) {
         if (ioctl(fs, SPI_IOC_MESSAGE(2), transfer) < 0) {
             perror("Error al realizar la transferencia SPI");
             throw std::runtime_error("Error en la transferencia SPI");
+            return true;
         }
+        return false;
     }
 
-    void Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer_received, const uint32_t length) {
+    const bool Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer_received, const uint32_t length) {
         // Inicializar los buffers
         std::vector<uint8_t> cmd_buffer_tx(4, 0);
         std::vector<uint8_t> cmd_buffer_rx(4, 0);
@@ -213,12 +216,14 @@ namespace SPI {
         }
 
         // Ejecutar ambas transferencias SPI
-        handle_spi_transfer(spi_transfer, 2);
+        auto t = handle_spi_transfer(spi_transfer, 2);
 
         // Copiar los datos recibidos al buffer de lectura
         if (cmd == CMD_READ_DATA) {
             std::memcpy(buffer_received, rx_buffer_tmp.data(), length);
         }
+        
+        return t;
     }
 
     void Spi_t::write(uint32_t address, uint8_t* data, const size_t length) {
