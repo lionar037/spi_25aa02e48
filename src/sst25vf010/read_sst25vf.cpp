@@ -46,7 +46,10 @@ namespace ST25VF010 {
             uint32_t address = block * block_size; // Dirección de inicio para cada bloque
 
             // Leer el bloque de datos desde la memoria SPI
-            spi->read(address, buffer_rd, block_size);
+            //spi->read(address, buffer_rd, block_size);
+            
+            spi->read(address, buffer_rd);
+
             if (buffer_rd[0]!= 0xae){
                 std::cout <<std::to_string(address)<<"\n";
             }
