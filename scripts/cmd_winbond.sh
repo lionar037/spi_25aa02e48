@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Archivo para leer/escribir/guardar datos en la memoria
-LINK="st25vf010a_flashrom.bin"
+LINK="files/st25vf010a_flashrom.bin"
 
 # Comando recibido como argumento
 CMD="$1"
