@@ -201,7 +201,7 @@ namespace SPI {
         spi_transfer[0].len = 1;
         spi_transfer[0].speed_hz = get_spi_speed();
         spi_transfer[0].bits_per_word = 8;
-        spi_transfer[0].delay_usecs = 0;    
+        spi_transfer[0].delay_usecs = 10;    
         // Transferencia para los datos
         
         spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(vect_buffer.data());
@@ -210,7 +210,7 @@ namespace SPI {
         spi_transfer[1].speed_hz = get_spi_speed();
         spi_transfer[1].bits_per_word = 8;
         spi_transfer[1].cs_change = 0; // Cambiar a 0 si no es necesario cambiar CS
-        spi_transfer[1].delay_usecs = 0;    
+        spi_transfer[1].delay_usecs = 10;    
         // Ejecutar transferencias
         //return 
         handle_spi_transfer(spi_transfer, 2);
