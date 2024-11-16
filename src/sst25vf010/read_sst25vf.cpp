@@ -38,18 +38,20 @@ namespace ST25VF010 {
         }
 
         uint8_t buffer_rd[block_size] = {0};
-
+        std::cout <<"\n";
         // Leer datos de la memoria SPI y guardarlos en el archivo
         for (uint32_t block = 0; block < num_blocks; ++block) {
             uint32_t address = block * block_size; // Dirección de inicio para cada bloque
 
             // Leer el bloque de datos desde la memoria SPI
             spi.read(address, buffer_rd, block_size);
-
+            if (buffer_rd[0]!= 0xae){
+                std::cout <<.;
+            }
             // Escribir el bloque leído en el archivo
             outputFile.write(reinterpret_cast<char *>(buffer_rd), block_size);
         }
-
+ std::cout <<"\n";
         outputFile.close();
         std::cout << "Lectura completa y guardada en " << file_path << std::endl;
     }
