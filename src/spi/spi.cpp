@@ -311,7 +311,7 @@ namespace SPI {
         spi_ioc_transfer spi_transfer = {};
         spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer.data()); // Dirección de tx_buffer
         spi_transfer.rx_buf = 0; // No es necesario recibir datos en esta operación
-        spi_transfer.len = 5; // Comando + Dirección (3 bytes) + Dato (1 byte)
+        spi_transfer.len = total_size ; // Comando + Dirección (3 bytes) + Dato (1 byte)
         spi_transfer.speed_hz = get_spi_speed();
         spi_transfer.bits_per_word = 8;
         spi_transfer.cs_change = 0; // No cambiar el CS tras la operación
