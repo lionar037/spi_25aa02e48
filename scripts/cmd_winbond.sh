@@ -1,15 +1,40 @@
 #!/bin/bash
 
-LINK=st25vf010a_flashrom.bin
+# Archivo para leer/escribir/guardar datos en la memoria
+LINK="st25vf010a_flashrom.bin"
 
-#permisos
-sudo usermod -aG spi $(whoami)
+# Comando recibido como argumento
+CMD="$1"
 
-#read
-flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -r $LINK
+# Verifica que se proporcionó un comando válido
+if [[ -z $CMD ]]; then
+    echo "Uso: $0 {read|write|erase}"
+    exit 1
+fi
 
-#write
-flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=256 -w $LINK
+# Asegúrate de que el usuario tenga permisos sobre SPI (configuración previa)
+if ! groups $(whoami) | grep -q '\bspi\b'; then
+    echo "El usuario no pertenece al grupo 'spi'. Añádelo manualmente con:"
+    echo "sudo usermod -aG spi $(whoami)"
+    exit 1
+fi
 
-#erase
-flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=256 -erase_all
+# Ejecuta el comando correspondiente
+case $CMD in
+    read)
+        echo "Leyendo desde la memoria..."
+        flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -r "$LINK"
+        ;;
+    write)
+        echo "Escribiendo en la memoria..."
+        flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -w "$LINK"
+        ;;
+    erase)
+        echo "Borrando toda la memoria..."
+        flashrom -p linux_spi:dev=/dev/spidev0.1,spispeed=512 -E
+        ;;
+    *)
+        echo "Comando inválido. Uso: $0 {read|write|erase}"
+        exit 1
+        ;;
+esac
