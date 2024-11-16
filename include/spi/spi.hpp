@@ -20,7 +20,7 @@
 
 #define     SPI_DEVICE "/dev/spidev0.1"
     
-#define     SPEED               10000
+#define     SPEED               1000000
     
 #define     STATUS_BUSY         0x1 
 #define     WRSR                0x1
