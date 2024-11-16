@@ -42,8 +42,10 @@ elif [[ "$arch" == arm* ]]; then
     ./bin/st25vf010_app_$arch
 fi
 
-
-hexdump -C $FILES_GEN
+#verificar si el archivo existe pero no está vacío
+if [[ -s $FILES_GEN ]];then 
+    hexdump -C $FILES_GEN
+fi
 
 ./scripts/cmd_winbond.sh  read
 
