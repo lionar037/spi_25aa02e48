@@ -15,7 +15,7 @@
 
 #define     SPI_DEVICE "/dev/spidev0.1"
     
-#define     SPEED               100000
+#define     SPEED               1000000
     
 #define     STATUS_BUSY         0x1 
 #define     WRSR                0x1
@@ -88,7 +88,7 @@ union statusREGISTER {
         void        settings_spi            ();
         uint8_t         tx_buffer           [LARGE_SECTOR_SIZE];
         uint8_t         rx_buffer           [LARGE_SECTOR_SIZE];
-        uint32_t        spi_speed           ;
+        const uint32_t        spi_speed           ;
         int             fs                  ;
         struct          spi_ioc_transfer    spi;
         //struct          spi_ioc_transfer    spi_transfer[2] = {};
