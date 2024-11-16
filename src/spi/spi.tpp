@@ -1,5 +1,5 @@
 //codigo spi.tpp
-//#include <spi/spi.hpp>
+#include <spi/spi.hpp>
 #include <iomanip> 
 #include <cstring>
 #include <stdexcept>

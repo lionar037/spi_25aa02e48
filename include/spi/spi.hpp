@@ -14,7 +14,7 @@
 #include <linux/spi/spidev.h>
 
 
-#include <spi/spi.tpp>
+//#include <spi/spi.tpp>
 
 //#define DBG_SPI
 
