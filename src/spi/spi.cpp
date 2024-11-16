@@ -99,6 +99,7 @@ namespace SPI {
         spi_transfer.speed_hz = get_spi_speed();            // Configuración de velocidad SPI
         spi_transfer.bits_per_word = 8;                     // Configuración de bits por palabra
         spi_transfer.cs_change = 0;                         // No cambiar el chip select
+        //spi_transfer.delay_usecs = 0;    
 
         // Ejecutar la transferencia SPI
         int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer);
@@ -117,6 +118,7 @@ namespace SPI {
         spi.speed_hz = get_spi_speed();
         spi.bits_per_word = 8;
         spi.cs_change = 0;
+        //spi.delay_usecs = 0;    
         int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi);
         if (ret < 0) {
             std::cerr << "Error en WRSR: " << strerror(errno) << std::endl;
@@ -187,8 +189,8 @@ namespace SPI {
     }
 
     void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {                                        
-
-        const uint8_t cmd_buffer_tx = AAI_CMD;
+        //writeEnable();
+        uint8_t cmd_buffer_tx []= {AAI_CMD};
 
         // Configurar las transferencias SPI
         struct spi_ioc_transfer spi_transfer[2] = {};
@@ -199,7 +201,7 @@ namespace SPI {
         spi_transfer[0].len = 1;
         spi_transfer[0].speed_hz = get_spi_speed();
         spi_transfer[0].bits_per_word = 8;
-
+        //spi_transfer[0].delay_usecs = 0;    
         // Transferencia para los datos
         
         spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(vect_buffer.data());
@@ -208,7 +210,7 @@ namespace SPI {
         spi_transfer[1].speed_hz = get_spi_speed();
         spi_transfer[1].bits_per_word = 8;
         spi_transfer[1].cs_change = 0; // Cambiar a 0 si no es necesario cambiar CS
-
+        //spi_transfer[1].delay_usecs = 0;    
         // Ejecutar transferencias
         //return 
         handle_spi_transfer(spi_transfer, 2);
@@ -247,7 +249,7 @@ namespace SPI {
         spi_transfer[0].len = cmd_size;
         spi_transfer[0].speed_hz = get_spi_speed();
         spi_transfer[0].bits_per_word = 8;
-
+        spi_transfer[0].delay_usecs = 0;    
         // Transferencia para los datos
         spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == AAI_CMD ? buffer.data() : nullptr); 
         //spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == CMD_WRITE_DATA ? buffer.data() : nullptr); 
@@ -256,6 +258,7 @@ namespace SPI {
         spi_transfer[1].speed_hz = get_spi_speed();
         spi_transfer[1].bits_per_word = 8;
         spi_transfer[1].cs_change = 0; // Cambiar a 0 si no es necesario cambiar CS
+        spi_transfer[1].delay_usecs = 0;    
 
         // Ejecutar transferencias
         return handle_spi_transfer(spi_transfer, 2);
