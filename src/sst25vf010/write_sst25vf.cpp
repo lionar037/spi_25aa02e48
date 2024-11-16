@@ -40,8 +40,10 @@ namespace ST25VF010{
 		}
 
 	void St25vf010_t::write() {	
-		const uint8_t data=0xae;
+		//const uint8_t data=0xae;
+		const std::vector <uint8_t>data(1,0xae);
 		init();
+		
 		for(uint32_t address=0x00 ; address < ADDRESS_END ; ++address) {
 				spi->write(address, data);
 			}
