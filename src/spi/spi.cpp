@@ -1,3 +1,4 @@
+//codigo spi.cpp
 #include <spi/spi.hpp>
 #include <iomanip> 
 #include <cstring>

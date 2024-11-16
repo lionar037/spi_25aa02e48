@@ -1,3 +1,4 @@
+//codigo spi.hpp
 #pragma once
 
 #include <iostream>
