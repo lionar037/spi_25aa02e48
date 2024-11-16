@@ -20,7 +20,7 @@ namespace ST25VF010{
 	void St25vf010_t::write_rand() {	
 	init();
 		uint8_t buffer[4]={0xa1,0xbb,0xcc,0xdd};
-		for(uint32_t address=0x000000;address < ADDRESS_END;){
+		for(uint32_t address=0x000000;address < 0x1ff;){
 				spi->write(address, buffer ,1);
 				buffer[0]=rand()%256;
 				address += 1;
