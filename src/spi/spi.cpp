@@ -154,6 +154,17 @@ namespace SPI {
     return 0x00;
     }// end get_fs
 
+
+
+    const bool Spi_t::handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) {
+        if (ioctl(fs, SPI_IOC_MESSAGE(2), transfer) < 0) {
+            perror("Error al realizar la transferencia SPI");
+            throw std::runtime_error("Error en la transferencia SPI");
+        return true;
+        }
+    return false;
+    }
+
     template <typename BufferType>
     const bool 
     Spi_t::read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer) {
