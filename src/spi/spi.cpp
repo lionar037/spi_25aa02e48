@@ -165,7 +165,7 @@ namespace SPI {
         }
     }
 
-    void Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer, const uint32_t length) {
+    void Spi_t::read_write(const uint8_t cmd, const uint32_t address, uint8_t* buffer_received, const uint32_t length) {
         // Inicializar los buffers
         std::vector<uint8_t> cmd_buffer_tx(4, 0);
         std::vector<uint8_t> cmd_buffer_rx(4, 0);
@@ -199,7 +199,7 @@ namespace SPI {
 
         // Copiar los datos al buffer de transmisión para escribir
         if (cmd == CMD_WRITE_DATA) {
-            std::memcpy(tx_buffer_tmp.data(), buffer, length);
+            std::memcpy(tx_buffer_tmp.data(), buffer_received, length);
         }
 
         // Ejecutar ambas transferencias SPI
@@ -207,7 +207,7 @@ namespace SPI {
 
         // Copiar los datos recibidos al buffer de lectura
         if (cmd == CMD_READ_DATA) {
-            std::memcpy(buffer, rx_buffer_tmp.data(), length);
+            std::memcpy(buffer_received, rx_buffer_tmp.data(), length);
         }
     }
 

@@ -26,11 +26,12 @@ namespace ST25VF010{
 		}
 	
 	void St25vf010_t::write() {	
-		uint8_t buffer[4]={0xa1,0xbb,0xcc,0xdd};
+		uint8_t buffer[4]={0xae,0xbb,0xcc,0xdd};
 		const uint8_t data=0xae;
 		init();
+		
 		for(uint32_t address=0x000000;address < ADDRESS_END;++address)
-				spi.write(address, data ,1);				
+				spi.write(address, buffer ,1);				
 									
 			spi.writeDisable();			
 		}
