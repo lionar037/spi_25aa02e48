@@ -180,14 +180,16 @@ namespace SPI {
         read_write(CMD_WRITE_DATA, address, tmp_buffer);
     }
 
-        void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
+    void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
         //writeEnable();
-        read_write(AAI_CMD, address, vect_buffer);
+        read_write(CMD_WRITE_DATA, address, vect_buffer);//
+        //read_write(AAI_CMD, address, vect_buffer);
     }
 
-        void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {        
-        read_write(AAI_CMD, address, vect_buffer);
+    void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {                
+        read_write(CMD_WRITE_DATA, address, vect_buffer);
     }
+
     template <typename BufferType>
     const bool Spi_t::read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer) {
         // Verificar si el buffer es válido
@@ -223,7 +225,8 @@ namespace SPI {
         spi_transfer[0].bits_per_word = 8;
 
         // Transferencia para los datos
-        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == AAI_CMD ? buffer.data() : nullptr); 
+        //spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == AAI_CMD ? buffer.data() : nullptr); 
+        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == CMD_WRITE_DATA ? buffer.data() : nullptr); 
         spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(cmd == CMD_READ_DATA ? buffer.data() : nullptr);
         spi_transfer[1].len = length;
         spi_transfer[1].speed_hz = get_spi_speed();
@@ -233,5 +236,5 @@ namespace SPI {
         // Ejecutar transferencias
         return handle_spi_transfer(spi_transfer, 2);
     }
-    
+
 }//end namespace spi
