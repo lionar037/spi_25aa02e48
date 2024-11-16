@@ -4,7 +4,7 @@
 
 namespace ST25VF010{
 
-	St25vf010_t::St25vf010_t
+	St25vf010_t::St25vf010_t()
 	: spi { std::make_unique<SPI::Spi_t>() }
 	{
 		//init();
