@@ -42,9 +42,8 @@ namespace TYME{
 
 
     void 
-    delay_ms(const uint64_t t)
-    {
-    std::chrono::microseconds delay_loc(t);
-    std::this_thread::sleep_for(delay_loc);
+    delay_ms(const uint64_t t){
+        std::chrono::microseconds delay_loc(t);
+        std::this_thread::sleep_for(delay_loc);
     }
 }
