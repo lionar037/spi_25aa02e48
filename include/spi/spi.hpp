@@ -82,19 +82,18 @@ union statusREGISTER {
         void                writeDisable            ();
 
     protected:                                                                
-        void        cmd_byte_spi            (const uint8_t);
-        void        writeEnable             () ;        
-        void        read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
-        const bool  handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) ;        
+        void                cmd_byte_spi            (const uint8_t);
+        void                writeEnable             () ;        
+        const bool          read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
+        const bool          handle_spi_transfer(const struct spi_ioc_transfer* transfer, size_t length) ;        
     private:
-        void        init                    ();
-        void        settings_spi            ();
-        uint8_t         tx_buffer           [LARGE_SECTOR_SIZE];
-        uint8_t         rx_buffer           [LARGE_SECTOR_SIZE];
-        const uint32_t        spi_speed           ;
-        int             fs                  ;
-        struct          spi_ioc_transfer    spi;
-        //struct          spi_ioc_transfer    spi_transfer[2] = {};
+        void                init                    ();
+        void                settings_spi            ();
+        uint8_t             tx_buffer           [LARGE_SECTOR_SIZE];
+        uint8_t             rx_buffer           [LARGE_SECTOR_SIZE];
+        const uint32_t      spi_speed           ;
+        int                 fs                  ;
+        struct              spi_ioc_transfer    spi;        
     };
 
 }
