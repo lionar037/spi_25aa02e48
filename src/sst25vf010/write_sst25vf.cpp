@@ -52,18 +52,21 @@ namespace ST25VF010{
 		}
 
 		void St25vf010_t::write_aai() {	
-		std::vector <uint8_t>vect_data(1,0xAE);
+		std::vector <uint8_t>vect_data(256,0xAE);
 		init();
 
 		uint32_t address=0x00;
 		spi->write(address, vect_data);
-
+		address++;
 		for( ; address < ADDRESS_END ; ) {
-				spi->write_aai(address, vect_data);
+				for(const auto& it:vect_data)spi->write_aai(address, it);
 				address += vect_data.size();
 			}
-		spi->cmd_byte_spi_duo(WRDI);// Write Disable (WRDI) , Instruction to terminate , 
-		auto status = spi->cmd_byte_spi_duo(RDSR);//Read Status Register (RDSR)
+
+		//spi->cmd_byte_spi_duo(WRDI);// Write Disable (WRDI) , Instruction to terminate , 
+		cmd_byte_spi(WRDI);//1 byte de comando // Write Disable (WRDI) , Instruction to terminate , 
+		auto status = spi->cmd_byte_spi_duo(RDSR);//Read Status Register (RDSR)				
+
 		spi->writeDisable();			
 
 		}
