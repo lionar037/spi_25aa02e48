@@ -1,5 +1,6 @@
 #!/bin/bash
 
+DIR=files
 # Detectar el sistema operativo
 os_name=$(uname)
 
@@ -30,7 +31,19 @@ case "$os_name" in
         ;;
 esac
 
-FILES_GEN=files/25vf010a.bin
+FILES_GEN=$DIR/25vf010a.bin
+
+
+
+
+# Verificar si el directorio contiene archivos
+if [ -d "$DIR" ] && [ "$(ls -A "$DIR")" ]; then
+    echo "El directorio $DIR contiene los siguientes archivos:"
+    ls -l "$DIR"
+    rm $DIR/*
+else
+    echo "El directorio $DIR está vacío o no contiene archivos."
+fi
 
 arch=$(uname -m)
 
