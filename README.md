@@ -14,7 +14,7 @@ make run
 
 # leer con :
 
-hexdump -C 25vf010a.bin
+hexdump -C files/25vf010a.bin
 
 #software para leer y escribir memorias WINBOND 25Q32 etc...
 
@@ -28,7 +28,7 @@ sudo apt isntall -y meson
 
 # comandos para memoria WINBOND 25Q16...
 
-LINK=st25vf010a_flashrom.bin
+LINK=files/st25vf010a_flashrom.bin
 
 #permisos
 sudo usermod -aG spi $(whoami)
