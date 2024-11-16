@@ -189,33 +189,34 @@ const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd) {
 
     void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {                                        
         if (vect_buffer.empty()) {
-            std::cerr << "write() - Datos vacíos o tamaño de datos incorrecto." << std::endl;
+            std::cerr << "write_aai() - Datos vacíos o tamaño de datos incorrecto." << std::endl;
             return;
         }
 
-        std::vector <uint8_t>tx_buffer_vect(256,0xff);
-        std::vector <uint8_t>rx_buffer_vect(256,0xff);
-        
-        std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
-        std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
+        std::vector<uint8_t> tx_buffer_vect(vect_buffer.size() + 4, 0xff);
+        std::vector<uint8_t> rx_buffer_vect(vect_buffer.size() + 4, 0xff);
 
-        //uint8_t cmd = BYTE_PROGRAM;  // Comando de escritura
-        tx_buffer[0] = BYTE_PROGRAM;
-        tx_buffer[1] = (address >> 16) & 0xFF;  // Dirección alta
-        tx_buffer[2] = (address >> 8) & 0xFF;   // Dirección media
-        tx_buffer[3] = address & 0xFF;          // Dirección baja
-        //std::memcpy(tx_buffer + 4, vect_buffer.data(), vect_buffer.size());  // Copiar datos a tx_buffer
-        std::copy(vect_buffer.begin(),vect_buffer.end(),tx_buffer+4);
+        // Comando de escritura y dirección
+        tx_buffer_vect[0] = BYTE_PROGRAM;
+        tx_buffer_vect[1] = (address >> 16) & 0xFF;  // Dirección alta
+        tx_buffer_vect[2] = (address >> 8) & 0xFF;   // Dirección media
+        tx_buffer_vect[3] = address & 0xFF;          // Dirección baja
+
+        // Copiar datos a partir de la posición 4
+        std::copy(vect_buffer.begin(), vect_buffer.end(), tx_buffer_vect.begin() + 4);
+
         spi_ioc_transfer spi_transfer{};
-        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
-        spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
+        spi_transfer.tx_buf = reinterpret_cast<uintptr_t>(tx_buffer_vect.data());
+        spi_transfer.rx_buf = reinterpret_cast<uintptr_t>(rx_buffer_vect.data());
         spi_transfer.bits_per_word = 8;
         spi_transfer.speed_hz = spi_speed;
-        spi_transfer.len = vect_buffer.size() + 4;  // Comando + Dirección + Datos
+        spi_transfer.len = static_cast<__u32>(tx_buffer_vect.size());  // Longitud total (comando + dirección + datos)
         spi_transfer.cs_change = 0;
+
         writeEnable();  // Habilitar escritura
+
         if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-            std::cerr << "write() - Error al escribir en la memoria SPI: " << strerror(errno) << std::endl;
+            std::cerr << "write_aai() - Error al escribir en la memoria SPI: " << strerror(errno) << std::endl;
         }
     }
 
