@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem> // C++17
-
+/*
 namespace ST25VF010 {
 
     void St25vf010_t::read() {
@@ -61,7 +61,7 @@ namespace ST25VF010 {
 } // namespace ST25VF010
 
 
-/*
+*/
 namespace ST25VF010 {
 
     void St25vf010_t::read() {
@@ -113,4 +113,3 @@ namespace ST25VF010 {
     }
 
 } // namespace ST25VF010
-*/
