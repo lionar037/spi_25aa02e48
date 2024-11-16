@@ -1,5 +1,5 @@
-//#include "spi.h"
-#include "spi.h"
+//archivo spi.cpp"
+#include "spi.hpp"
 #include <iostream>
 #include <cstring>
 #include <fcntl.h>

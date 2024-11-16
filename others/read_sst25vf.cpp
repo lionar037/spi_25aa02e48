@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include "spi.h"
+#include "spi.hpp"
 
 #define MEMORY_SIZE (32 * 1024) // Tama      o de la memoria en bytes (32 KB)
 
