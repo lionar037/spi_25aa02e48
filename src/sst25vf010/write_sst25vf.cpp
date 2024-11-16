@@ -58,8 +58,8 @@ namespace ST25VF010{
 
 		uint32_t address=0x00;
 		//spi->writeEnable();
-		//spi->write(address, vect_data);
-		//address++;
+		spi->write(address, vect_data);
+		address++;
 		//for( ; address < ADDRESS_END ; ) 
 		for( ; address < 0x1ff ; ) {				
 				spi->write_aai(address, vect_data);

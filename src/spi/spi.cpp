@@ -182,13 +182,35 @@ namespace SPI {
 
     void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
         writeEnable();
-        read_write(CMD_WRITE_DATA, address, vect_buffer);//
-        //read_write(AAI_CMD, address, vect_buffer);
+        //read_write(CMD_WRITE_DATA, address, vect_buffer);//
+        read_write(AAI_CMD, address, vect_buffer);
     }
 
-    void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {                
-        writeEnable();
-        read_write(CMD_WRITE_DATA, address, vect_buffer);
+    void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {                                        
+
+        const uint8_t cmd_buffer_tx = AAI_CMD;
+
+        // Configurar las transferencias SPI
+        struct spi_ioc_transfer spi_transfer[2] = {};
+
+        // Transferencia para el comando                
+        spi_transfer[0].tx_buf = reinterpret_cast<unsigned long>(cmd_buffer_tx);         
+        spi_transfer[0].rx_buf = reinterpret_cast<unsigned long>(nullptr);
+        spi_transfer[0].len = 1;
+        spi_transfer[0].speed_hz = get_spi_speed();
+        spi_transfer[0].bits_per_word = 8;
+
+        // Transferencia para los datos
+        
+        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(vect_buffer.data());
+        spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(vect_buffer.data());
+        spi_transfer[1].len = 1;
+        spi_transfer[1].speed_hz = get_spi_speed();
+        spi_transfer[1].bits_per_word = 8;
+        spi_transfer[1].cs_change = 0; // Cambiar a 0 si no es necesario cambiar CS
+
+        // Ejecutar transferencias
+        return handle_spi_transfer(spi_transfer, 2);
     }
 
     template <typename BufferType>
@@ -226,8 +248,8 @@ namespace SPI {
         spi_transfer[0].bits_per_word = 8;
 
         // Transferencia para los datos
-        //spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == AAI_CMD ? buffer.data() : nullptr); 
-        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == CMD_WRITE_DATA ? buffer.data() : nullptr); 
+        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == AAI_CMD ? buffer.data() : nullptr); 
+        //spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(cmd == CMD_WRITE_DATA ? buffer.data() : nullptr); 
         spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(cmd == CMD_READ_DATA ? buffer.data() : nullptr);
         spi_transfer[1].len = length;
         spi_transfer[1].speed_hz = get_spi_speed();
