@@ -157,69 +157,69 @@ namespace SPI {
     template <typename BufferType>
     const bool 
     Spi_t::read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer) {
-        // Verificar si el buffer es válido
-        if constexpr (std::is_same_v<BufferType, std::vector<uint8_t>>) {
-            if (buffer.empty()) {
-                throw std::invalid_argument("El buffer proporcionado está vacío.");
+            // Verificar si el buffer es válido
+            if constexpr (std::is_same_v<BufferType, std::vector<uint8_t>>) {
+                if (buffer.empty()) {
+                    throw std::invalid_argument("El buffer proporcionado está vacío.");
+                }
             }
-        }
 
-    // Calcular tamaños
-    const size_t length = std::is_same_v<BufferType, std::vector<uint8_t>> ? buffer.size() : sizeof(buffer);
-    const size_t cmd_size = 4;
+        // Calcular tamaños
+        const size_t length = std::is_same_v<BufferType, std::vector<uint8_t>> ? buffer.size() : sizeof(buffer);
+        const size_t cmd_size = 4;
 
-    // Crear buffers para el comando y datos temporales
-    std::vector<uint8_t> cmd_buffer_tx(cmd_size, 0);
-    std::vector<uint8_t> cmd_buffer_rx(cmd_size, 0);
+        // Crear buffers para el comando y datos temporales
+        std::vector<uint8_t> cmd_buffer_tx(cmd_size, 0);
+        std::vector<uint8_t> cmd_buffer_rx(cmd_size, 0);
 
-    // Llenar el buffer de comando
-    cmd_buffer_tx[0] = cmd;
-    cmd_buffer_tx[1] = (address >> 16) & 0xFF;
-    cmd_buffer_tx[2] = (address >> 8) & 0xFF;
-    cmd_buffer_tx[3] = address & 0xFF;
+        // Llenar el buffer de comando
+        cmd_buffer_tx[0] = cmd;
+        cmd_buffer_tx[1] = (address >> 16) & 0xFF;
+        cmd_buffer_tx[2] = (address >> 8) & 0xFF;
+        cmd_buffer_tx[3] = address & 0xFF;
 
-    // Configurar las transferencias SPI
-    struct spi_ioc_transfer spi_transfer[2] = {};
+        // Configurar las transferencias SPI
+        struct spi_ioc_transfer spi_transfer[2] = {};
 
-    // Transferencia para el comando
-    spi_transfer[0].tx_buf = reinterpret_cast<unsigned long>(cmd_buffer_tx.data());
-    spi_transfer[0].rx_buf = reinterpret_cast<unsigned long>(cmd_buffer_rx.data());
-    spi_transfer[0].len = cmd_size;
-    spi_transfer[0].speed_hz = get_spi_speed();
-    spi_transfer[0].bits_per_word = 8;
+        // Transferencia para el comando
+        spi_transfer[0].tx_buf = reinterpret_cast<unsigned long>(cmd_buffer_tx.data());
+        spi_transfer[0].rx_buf = reinterpret_cast<unsigned long>(cmd_buffer_rx.data());
+        spi_transfer[0].len = cmd_size;
+        spi_transfer[0].speed_hz = get_spi_speed();
+        spi_transfer[0].bits_per_word = 8;
 
-    // Transferencia para los datos
-    spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(
+        // Transferencia para los datos
+        spi_transfer[1].tx_buf = reinterpret_cast<unsigned long>(
         cmd == CMD_WRITE_DATA ? buffer.data() : nullptr);
-    spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(
+        spi_transfer[1].rx_buf = reinterpret_cast<unsigned long>(
         cmd == CMD_READ_DATA ? buffer.data() : nullptr);
-    spi_transfer[1].len = length;
-    spi_transfer[1].speed_hz = get_spi_speed();
-    spi_transfer[1].bits_per_word = 8;
-    spi_transfer[1].cs_change = 1;
+        spi_transfer[1].len = length;
+        spi_transfer[1].speed_hz = get_spi_speed();
+        spi_transfer[1].bits_per_word = 8;
+        spi_transfer[1].cs_change = 1;
 
-    // Ejecutar transferencias
-    return handle_spi_transfer(spi_transfer, 2);
-}
+        // Ejecutar transferencias
+        return handle_spi_transfer(spi_transfer, 2);
+    }
 
-const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& vect) {
-    return read_write(CMD_READ_DATA, address, vect);
-}
+    const bool Spi_t::read(const uint32_t address, std::vector<uint8_t>& vect) {
+        return read_write(CMD_READ_DATA, address, vect);
+    }
 
-const bool Spi_t::read(const uint32_t address, uint8_t* buffer, const uint32_t length) {
-    std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
-    return read_write(CMD_READ_DATA, address, tmp_buffer);
-}
+    const bool Spi_t::read(const uint32_t address, uint8_t* buffer, const uint32_t length) {
+        std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
+        return read_write(CMD_READ_DATA, address, tmp_buffer);
+    }
 
-void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
-    writeEnable();
-    read_write(CMD_WRITE_DATA, address, vect_buffer);
-}
+    void Spi_t::write(const uint32_t address, std::vector<uint8_t>& vect_buffer) {
+        writeEnable();
+        read_write(CMD_WRITE_DATA, address, vect_buffer);
+    }
 
-void Spi_t::write(const uint32_t address, uint8_t* buffer, const size_t length) {
-    writeEnable();
-    std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
-    read_write(CMD_WRITE_DATA, address, tmp_buffer);
-}
+    void Spi_t::write(const uint32_t address, uint8_t* buffer, const size_t length) {
+        writeEnable();
+        std::vector<uint8_t> tmp_buffer(buffer, buffer + length);
+        read_write(CMD_WRITE_DATA, address, tmp_buffer);
+    }
 
 }//end namespace spi
