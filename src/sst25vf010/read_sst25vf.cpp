@@ -61,7 +61,9 @@ namespace ST25VF010 {
 
             //// Si se encontró un elemento diferente, imprimir la dirección
             if (it != vect_buffer_rd.end()) {
+                #ifdef DBG_ST25
                 std::cout << "Diferente de 0xAE en dirección: " << std::to_string(address) << "\n";
+                #endif
             }
 
             // Escribir el bloque leído en el archivo
