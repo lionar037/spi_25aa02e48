@@ -1,4 +1,4 @@
-#include <spi/spi->hpp>
+#include <spi/spi.hpp>
 #include <st25vf010/st25vf010.hpp>
 #include <iostream>
 
