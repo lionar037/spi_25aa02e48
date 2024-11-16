@@ -3,6 +3,7 @@
 #pragma once
 #include <spi/spi.hpp>
 #include <cstdint>
+#include <memory>
 
 #define SECTOR_ERASE_CMD 0x20 // Comando para borrar un sector
 #define SECTOR_SIZE 4096      // Tamaño de cada sector (en bytes)
@@ -18,7 +19,7 @@ namespace ST25VF010{
 
 struct St25vf010_t{
     public:
-        St25vf010_t()=default;
+        St25vf010_t();
         ~St25vf010_t()=default;
 
         void read();
@@ -32,7 +33,7 @@ struct St25vf010_t{
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
     private:
-        SPI::Spi_t spi{};
+        std::unique_ptr<SPI::Spi_t> spi;
     };
 
 }// end namespace ST25VF010

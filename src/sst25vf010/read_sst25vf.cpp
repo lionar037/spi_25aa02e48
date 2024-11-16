@@ -1,6 +1,6 @@
 //read_sst25vf.cpp
 
-#include <spi/spi.hpp>
+#include <spi/spi->hpp>
 #include <st25vf010/st25vf010.hpp>
 #include <fstream>
 #include <iostream>
@@ -11,7 +11,7 @@ namespace ST25VF010 {
 
     void St25vf010_t::read() {
         // Verifica si el dispositivo SPI se ha abierto correctamente
-        if (!spi.is_open()) {
+        if (!spi->is_open()) {
             std::cerr << "Failed to open SPI device." << std::endl;
             return;
         }
@@ -46,7 +46,7 @@ namespace ST25VF010 {
             uint32_t address = block * block_size; // Dirección de inicio para cada bloque
 
             // Leer el bloque de datos desde la memoria SPI
-            spi.read(address, buffer_rd, block_size);
+            spi->read(address, buffer_rd, block_size);
             if (buffer_rd[0]!= 0xae){
                 std::cout <<std::to_string(address)<<"\n";
             }
@@ -65,7 +65,7 @@ namespace ST25VF010 {
 namespace ST25VF010 {
 
     void St25vf010_t::read() {
-        if (!spi.is_open()) {
+        if (!spi->is_open()) {
             std::cerr << "Failed to open SPI device." << std::endl;
             return;
         }
@@ -102,7 +102,7 @@ namespace ST25VF010 {
             std::cout << "Leyendo bloque " << block 
                       << " en dirección: " << address << std::endl;
 
-            if (!spi.read(address, buffer_rd, block_size)) {
+            if (!spi->read(address, buffer_rd, block_size)) {
                 std::cerr << "Error al leer el bloque en la dirección: " << address << std::endl;
                 continue;
             }
