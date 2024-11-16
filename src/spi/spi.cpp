@@ -158,7 +158,7 @@ namespace SPI {
         read_write(CMD_READ_DATA ,address,buffer_received,length);
     }// end read_data
 
-    void SPI::Spi_t::read(const uint32_t address, std::vector<uint8_t>& buffer) {
+    void Spi_t::read(const uint32_t address, std::vector<uint8_t>& buffer) {
         if (buffer.empty()) {
             throw std::invalid_argument("El buffer proporcionado está vacío.");
         }
