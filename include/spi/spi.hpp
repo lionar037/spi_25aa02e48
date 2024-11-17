@@ -36,10 +36,10 @@ union StatusRegister {
     uint8_t byte;
 };
 
-class Spi {
+struct Spi_t {
 public:
-    Spi();
-    ~Spi();
+    Spi_t();
+    ~Spi_t();
 
     void initMemory();
     void write(uint32_t address, const std::vector<uint8_t>& data);
