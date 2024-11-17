@@ -3,18 +3,18 @@
 
 namespace SPI {
 
-Spi::Spi() : fd(-1) {
+Spi_t::Spi_t() : fd(-1) {
     initDevice();
     configureSPI();
 }
 
-Spi::~Spi() {
+Spi_t::~Spi_t() {
     if (fd >= 0) {
         close(fd);
     }
 }
 
-void Spi::initDevice() {
+void Spi_t::initDevice() {
     fd = open(SPIConstants::SPI_DEVICE, O_RDWR);
     if (fd < 0) {
         throw std::runtime_error("Error al abrir el dispositivo SPI: " + std::string(strerror(errno)));
@@ -36,16 +36,16 @@ void Spi::initDevice() {
     }
 }
 
-void Spi::configureSPI() {
+void Spi_t::configureSPI() {
     memset(txBuffer, 0xFF, sizeof(txBuffer));
     memset(rxBuffer, 0xFF, sizeof(rxBuffer));
 }
 
-void Spi::initMemory() {
+void Spi_t::initMemory() {
     sendCommand(SPIConstants::WREN);
 }
 
-uint8_t Spi::sendCommand(uint8_t command, const uint8_t* txBuf, uint8_t* rxBuf, size_t len) {
+uint8_t Spi_t::sendCommand(uint8_t command, const uint8_t* txBuf, uint8_t* rxBuf, size_t len) {
     spi_ioc_transfer transfer = {};
     transfer.tx_buf = reinterpret_cast<uintptr_t>(&command);
     transfer.rx_buf = reinterpret_cast<uintptr_t>(rxBuf);
@@ -59,27 +59,27 @@ uint8_t Spi::sendCommand(uint8_t command, const uint8_t* txBuf, uint8_t* rxBuf, 
     return rxBuf ? rxBuf[0] : 0;
 }
 
-void Spi::writeEnable() {
+void Spi_t::writeEnable() {
     sendCommand(SPIConstants::WREN);
 }
 
-void Spi::writeDisable() {
+void Spi_t::writeDisable() {
     sendCommand(SPIConstants::WRDI);
 }
 
-uint8_t Spi::readStatus() {
+uint8_t Spi_t::readStatus() {
     uint8_t status = 0;
     sendCommand(SPIConstants::CMD_READ, nullptr, &status);
     return status;
 }
 
-void Spi::eraseAll() {
+void Spi_t::eraseAll() {
     writeEnable();
     sendCommand(SPIConstants::CHIP_ERASE_ALL);
     writeDisable();
 }
 
-void Spi::write(uint32_t address, const std::vector<uint8_t>& data) {
+void Spi_t::write(uint32_t address, const std::vector<uint8_t>& data) {
     if (data.size() > SPIConstants::LARGE_SECTOR_SIZE) {
         throw std::invalid_argument("El tamaño de datos excede el tamaño del sector.");
     }
@@ -106,7 +106,7 @@ void Spi::write(uint32_t address, const std::vector<uint8_t>& data) {
     writeDisable();
 }
 
-bool Spi::read(uint32_t address, std::vector<uint8_t>& data) {
+bool Spi_t::read(uint32_t address, std::vector<uint8_t>& data) {
     if (data.empty()) {
         throw std::invalid_argument("El buffer de lectura está vacío.");
     }
@@ -128,7 +128,7 @@ bool Spi::read(uint32_t address, std::vector<uint8_t>& data) {
     return true;
 }
 
-bool Spi::isOpen() const {
+bool Spi_t::isOpen() const {
     return fd >= 0;
 }
 
