@@ -17,8 +17,14 @@ namespace SPIConstants {
     constexpr uint8_t CMD_READ = 0x3;
     constexpr uint8_t WREN = 0x6;
     constexpr uint8_t WRDI = 0x4;
+    constexpr uint8_t RDSR = 0x05;
     constexpr uint8_t CHIP_ERASE_ALL = 0x60;
     constexpr size_t LARGE_SECTOR_SIZE = 256;
+    constexpr uint8_t SECTOR_ERASE_CMD = 0x20;
+    constexpr uint16_t SECTOR_SIZE = 4096 ;
+    constexpr uint32_t ADDRESS_END = 0x1ffff;
+    constexpr uint32_t MEMORY_SIZE = 0x1ffff;
+    
 } // namespace SPIConstants
 
 namespace SPI {

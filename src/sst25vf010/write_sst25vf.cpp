@@ -58,7 +58,7 @@ namespace ST25VF010{
 		//spi->writeEnable();
 		//spi->write_aai(address, vect_data);
 		//address++;
-		for( ; address < ADDRESS_END ; ) 
+		for( ; address < SPIConstants::ADDRESS_END ; ) 
 		//for( ; address < 0x1fff ; ) 
 			{				
 				//TYME::delay_ms(1);
