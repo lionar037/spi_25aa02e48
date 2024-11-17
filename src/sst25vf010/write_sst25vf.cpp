@@ -62,7 +62,7 @@ namespace ST25VF010{
 		//for( ; address < 0x1fff ; ) 
 			{				
 				//TYME::delay_ms(1);
-				spi->write_aai(address, vect_data);
+				spi->write(address, vect_data);
 				address += vect_data.size();				
 			}
 		spi->cmd_byte_spi(SPIConstants::WRDI);//1 byte de comando // Write Disable (WRDI) , Instruction to terminate , 
