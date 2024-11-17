@@ -132,4 +132,8 @@ namespace SPI {
         return fd >= 0;
     }
 
-    } // namespace SPI
+    void Spi_t::cmd_byte_spi_duo(const uint8_t cmd){
+
+    }
+
+} // namespace SPI

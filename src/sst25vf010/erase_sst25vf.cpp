@@ -1,38 +1,44 @@
 #include <spi/spi.hpp>
 #include <st25vf010/st25vf010.hpp>
 #include <iostream>
+#include <cstring>
+#include <linux/spi/spidev.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <cerrno>
 
-namespace ST25VF010{
+namespace ST25VF010 {
 
     void St25vf010_t::erase_sector(SPI::Spi_t &spi_s, uint32_t address) {
         uint8_t wren_cmd = SPIConstants::WREN;
-        uint8_t erase_cmd[4] = {SPIConstants::SECTOR_ERASE_CMD, (uint8_t)(address >> 16), (uint8_t)(address >> 8), (uint8_t)(address & 0xFF)};
+        uint8_t erase_cmd[4] = {
+            SPIConstants::SECTOR_ERASE_CMD,
+            static_cast<uint8_t>(address >> 16),
+            static_cast<uint8_t>(address >> 8),
+            static_cast<uint8_t>(address & 0xFF)
+        };
 
         // Habilitar escritura
-        struct spi_ioc_transfer wr_spi = {};
-        wr_spi.tx_buf = reinterpret_cast<unsigned long>(&wren_cmd);
-        wr_spi.len = 1;
-        wr_spi.speed_hz = SPIConstants::SPEED; // Utiliza el método get_spi_speed()
-        wr_spi.bits_per_word = 8;
-        int fs{0};
-        if (ioctl(fs, SPI_IOC_MESSAGE(1), &wr_spi) < 0) { // Utiliza el método get_fs()
+        if (!spi_s.cmd_byte_spi_duo(wren_cmd)) { 
             std::cerr << "Error enabling write: " << strerror(errno) << std::endl;
             return;
         }
 
         // Leer el registro de estado para verificar que la escritura está habilitada
-        uint8_t status =spi_s.cmd_byte_spi_duo(SPIConstants::RDSR);// spi.read_status();
-
+        uint8_t status = spi_s.cmd_byte_spi_duo(SPIConstants::RDSR);
         if (!(status & 0x02)) { // Verificar el bit WEL
             std::cerr << "Write enable latch (WEL) not set." << std::endl;
             return;
         }
 
         // Borrar el sector
-        wr_spi.tx_buf = reinterpret_cast<unsigned long>(erase_cmd);
-        wr_spi.len = 4;
+        struct spi_ioc_transfer erase_spi = {};
+        erase_spi.tx_buf = reinterpret_cast<unsigned long>(erase_cmd);
+        erase_spi.len = 4;
+        erase_spi.speed_hz = SPIConstants::SPEED;
+        erase_spi.bits_per_word = 8;
 
-        if (ioctl(spi_s.get_fs(), SPI_IOC_MESSAGE(1), &wr_spi) < 0) { // Utiliza el método get_fs()
+        if (ioctl(spi_s.get_fs(), SPI_IOC_MESSAGE(1), &erase_spi) < 0) {
             std::cerr << "Error erasing sector: " << strerror(errno) << std::endl;
         }
     }
@@ -49,13 +55,17 @@ namespace ST25VF010{
     }
 
     void St25vf010_t::erase() {
-        
         // Verifica si el dispositivo SPI se ha abierto correctamente
         if (!spi->is_open()) {
-            std::cerr << "Failed to open SPI device." << std::endl;        
+            std::cerr << "Failed to open SPI device." << std::endl;
+            return;
         }
-        spi->erase_sst25_all();
-        spi->spi_close();        
+
+        // Borrar toda la memoria
+        erase_entire_memory(*spi);
+
+        // Cerrar el dispositivo SPI
+        spi->spi_close();
     }
 
-}//end namespace
+} // end namespace

@@ -47,8 +47,8 @@ union StatusRegister {
         void eraseAll();
         uint8_t readStatus();
         bool isOpen() const;
-        const uint32_t get_spi_speed();
-
+        const uint32_t get_spi_speed(){return SPIConstants::SPEED ;}
+        void cmd_byte_spi_duo(const uint8_t);
     private:
         void initDevice();
         void configureSPI();
