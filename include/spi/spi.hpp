@@ -56,7 +56,7 @@ union StatusRegister {
         const uint32_t get_spi_speed(){return SPIConstants::SPEED ;}
         uint8_t cmd_byte_spi_duo(const uint8_t);
         void cmd_byte_spi(const uint8_t cmd){            
-            return sendCommand(cmd);
+            sendCommand(cmd);
         }
         void writeEnable();
         void writeDisable();
