@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <memory>
 
-#define SECTOR_ERASE_CMD    0x20 // Comando para borrar un sector
+//#define SECTOR_ERASE_CMD    0x20 // Comando para borrar un sector
 #define SECTOR_SIZE         4096      // Tamaño de cada sector (en bytes)
 
 #define ADDRESS_END         0x1FFFF
