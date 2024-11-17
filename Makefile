@@ -85,28 +85,21 @@ else
     INCDIRS := -I$(SRC) -I$(LIBDIR)
 endif
 
-#LIBS += -pthread -lbcm2835
-
 # Detectar la arquitectura del sistema
 ifeq ($(ARCH),x86_64)
     # Si es de 64 bits (x86_64), utilizar la biblioteca SSD1306_OLED_RPI
-#   LIBS += -lSSD1306_OLED_RPI  
     $(info x86_64 detectado OS de 64 bits)
 else ifeq ($(ARCH),aarch64)
     # Si es de 64 bits (ARM), utilizar la biblioteca SSD1306_OLED_RPI
-#    LIBS += -lSSD1306_OLED_RPI  
     $(info aarch64 detectado OS de 64 bits)
 else ifeq ($(ARCH),armv7l) # O cualquier otra arquitectura de 32 bits que necesites verificar
     # Si es de 32 bits (ARM), no usar la biblioteca SSD1306_OLED_RPI
     $(info armv7l detectado OS de 32 bits)
-#    LIBS += -lSSD1306_OLED_RPI
     # No se agrega LIBS para 32 bits
 else
     # Si es una arquitectura de 32 bits no específica
     $(info OS de 32 bits detectado)
 endif
-
-#CXXFLAGS = -g -O0
 
 #para el uso commando es make DEBUG=1
 ifdef DBG 
