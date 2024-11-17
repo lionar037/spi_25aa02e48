@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#VERSION=version1.1
+#VERSION=version1.2
 VERSION=READ
 #VERSION=WRITE
 #VERSION=ERASE

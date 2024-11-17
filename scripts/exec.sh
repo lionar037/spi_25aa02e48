@@ -2,7 +2,7 @@
 
 DIR=files
 
-CMD="| head -n 10"
+CMD="| head -n 0x1ff"
 # Detectar el sistema operativo
 os_name=$(uname)
 
