@@ -23,8 +23,8 @@ namespace SPIConstants {
     constexpr size_t LARGE_SECTOR_SIZE = 256;
     constexpr uint8_t SECTOR_ERASE_CMD = 0x20;
     constexpr uint16_t SECTOR_SIZE = 4096 ;
-    constexpr uint32_t ADDRESS_END = 0x1ffff;
-    constexpr uint32_t MEMORY_SIZE = 0x1ffff;
+    constexpr uint32_t ADDRESS_END = 0x20000;
+    constexpr uint32_t MEMORY_SIZE = 0x20000;
     
 } // namespace SPIConstants
 
