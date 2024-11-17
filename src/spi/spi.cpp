@@ -110,40 +110,40 @@ void Spi_t::cmd_byte_spi(const uint8_t cmd) {
 }
 
 
-void Spi_t::write_enable() {
-    //uint8_t cmd = WREN;  // Comando de habilitación de escritura
-    std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
-    std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
+    void Spi_t::write_enable() {
+        //uint8_t cmd = WREN;  // Comando de habilitación de escritura
+        std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
+        //std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
 
-    tx_buffer[0] = WREN;  // Comando de habilitación de escritura
-    spi_ioc_transfer spi_transfer{};
-    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
-    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
-    spi_transfer.bits_per_word = 8;
-    spi_transfer.speed_hz = get_spi_speed();
-    spi_transfer.len = 1;  // Solo el comando
+        tx_buffer[0] = WREN;  // Comando de habilitación de escritura
+        spi_ioc_transfer spi_transfer{};
+        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
+        spi_transfer.rx_buf = reinterpret_cast<unsigned long>(nullptr);
+        spi_transfer.bits_per_word = 8;
+        spi_transfer.speed_hz = get_spi_speed();
+        spi_transfer.len = 1;  // Solo el comando
 
-    if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-        std::cerr << "writeEnable() - Error al habilitar escritura: " << strerror(errno) << std::endl;
-    }
-}
-
-const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd) {
-    std::memset(&spi, 0, sizeof(spi));  // Reinicializar la estructura SPI
-    tx_buffer[0] = cmd;
-    tx_buffer[1] = 0x00;
-
-    // Configurar la transferencia SPI
-    configure_spi_transfer(spi, tx_buffer, rx_buffer, 2);
-
-    // Ejecutar la transferencia SPI
-    int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi);
-    if (ret < 0) {
-        std::cerr << "Error en WRSR: " << strerror(errno) << std::endl;
+        if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
+            std::cerr << "writeEnable() - Error al habilitar escritura: " << strerror(errno) << std::endl;
+        }
     }
 
-    return rx_buffer[1];
-}
+    const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd) {
+        std::memset(&spi, 0, sizeof(spi));  // Reinicializar la estructura SPI
+        tx_buffer[0] = cmd;
+        tx_buffer[1] = 0x00;
+
+        // Configurar la transferencia SPI
+        configure_spi_transfer(spi, tx_buffer, rx_buffer, 2);
+
+        // Ejecutar la transferencia SPI
+        int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi);
+        if (ret < 0) {
+            std::cerr << "Error en WRSR: " << strerror(errno) << std::endl;
+        }
+
+        return rx_buffer[1];
+    }
 
     const uint8_t Spi_t::read_status(){
         const uint8_t stat = cmd_byte_spi_duo(RDSR);
