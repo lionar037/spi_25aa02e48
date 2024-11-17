@@ -65,7 +65,9 @@ namespace ST25VF010{
 				spi->write(address, vect_data);
 				address += vect_data.size();				
 			}
+		
 		spi->cmd_byte_spi(SPIConstants::WRDI);//1 byte de comando // Write Disable (WRDI) , Instruction to terminate , 
+		
 		[[maybe_unused]] auto status = spi->cmd_byte_spi_duo(SPIConstants::RDSR);//Read Status Register (RDSR)				
 		std::cout << "status : "<< std::to_string(status)<<"\n";
 		}

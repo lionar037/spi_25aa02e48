@@ -55,6 +55,9 @@ union StatusRegister {
         bool isOpen() const;
         const uint32_t get_spi_speed(){return SPIConstants::SPEED ;}
         const bool cmd_byte_spi_duo(const uint8_t);
+        const uint8_t cmd_byte_spi(const uint8_t cmd){            
+            return sendCommand(cmd);
+        }
     private:
         void initDevice();
         void configureSPI();
