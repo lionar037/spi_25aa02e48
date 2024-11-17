@@ -10,7 +10,7 @@
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
 
-namespace SPIConstants {
+namespace SPI {
     constexpr const char* SPI_DEVICE = "/dev/spidev0.1";
     constexpr uint32_t SPEED = 100000;
     constexpr uint8_t BYTE_PROGRAM = 0x2;
