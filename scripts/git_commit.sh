@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=version1.1
+VERSION=version1.2
 
 # Obtener la fecha y hora actual en el formato YYYYMMDDHHMM
 timestamp=$(date +'%Y%m%d%H%M')
