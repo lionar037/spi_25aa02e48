@@ -17,7 +17,6 @@ namespace ST25VF010 {
         }
 
         const uint32_t block_size = 256;    // Tamaño del bloque en bytes
-        //const uint32_t num_blocks = 128 * 4; // Número de bloques para leer
         const uint32_t num_blocks = (SPIConstants::MEMORY_SIZE + block_size - 1) / block_size; // Ajustar según tamaño real
 
         // Define la carpeta y archivo de salida
@@ -39,8 +38,6 @@ namespace ST25VF010 {
             return;
         }
 
-        //s[[maybe_unused]]uint8_t buffer_rd[block_size] = {0};
-
         std::vector<uint8_t>vect_buffer_rd(block_size,0);
         std::cout <<"\n";
         // Leer datos de la memoria SPI y guardarlos en el archivo
@@ -48,7 +45,6 @@ namespace ST25VF010 {
             uint32_t address = block * block_size; // Dirección de inicio para cada bloque
 
             // Leer el bloque de datos desde la memoria SPI
-            //spi->read(address, buffer_rd, block_size);            
             spi->read(address, vect_buffer_rd);
 
             auto it = std::find_if(vect_buffer_rd.begin(), vect_buffer_rd.end(), [](uint8_t byte) {
@@ -63,7 +59,6 @@ namespace ST25VF010 {
             }
 
             // Escribir el bloque leído en el archivo
-            //outputFile.write(reinterpret_cast<char *>(buffer_rd), block_size);
             outputFile.write(reinterpret_cast<const char *>(vect_buffer_rd.data()), vect_buffer_rd.size());
         }
 

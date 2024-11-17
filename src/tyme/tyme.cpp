@@ -21,8 +21,8 @@ namespace TYME{
     return;
     }
 
-    const 
-    std::string  Time_t::get_tyme()
+    const std::string  
+    Time_t::get_tyme()
     {
         auto now = std::chrono::system_clock::now();
 

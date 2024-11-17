@@ -9,7 +9,8 @@
 
 namespace ST25VF010 {
 
-    void St25vf010_t::erase_sector(SPI::Spi_t &spi_s, uint32_t address) {
+    void 
+    St25vf010_t::erase_sector(SPI::Spi_t &spi_s, uint32_t address) {
         uint8_t wren_cmd = SPIConstants::WREN;
         uint8_t erase_cmd[4] = {
             SPIConstants::SECTOR_ERASE_CMD,
@@ -43,7 +44,8 @@ namespace ST25VF010 {
         }
     }
 
-    void St25vf010_t::erase_entire_memory(SPI::Spi_t &spi_s) {
+    void 
+    St25vf010_t::erase_entire_memory(SPI::Spi_t &spi_s) {
         const uint32_t num_sectors = SPIConstants::MEMORY_SIZE / SPIConstants::SECTOR_SIZE;
 
         for (uint32_t i = 0; i < num_sectors; ++i) {
@@ -54,7 +56,8 @@ namespace ST25VF010 {
         std::cout << "All sectors erased." << std::endl;
     }
 
-    void St25vf010_t::erase() {
+    void 
+    St25vf010_t::erase() {
         // Verifica si el dispositivo SPI se ha abierto correctamente
         if (!spi->isOpen()) {
             std::cerr << "Failed to open SPI device." << std::endl;
@@ -64,8 +67,6 @@ namespace ST25VF010 {
         // Borrar toda la memoria
         erase_entire_memory(*spi);
 
-        // Cerrar el dispositivo SPI
-        //spi->spi_close();
     }
 
 } // end namespace
