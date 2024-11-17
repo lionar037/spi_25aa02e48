@@ -37,17 +37,17 @@ namespace ST25VF010 {
         erase_spi.len = 4;
         erase_spi.speed_hz = SPIConstants::SPEED;
         erase_spi.bits_per_word = 8;
-
-        if (ioctl(spi_s.get_fs(), SPI_IOC_MESSAGE(1), &erase_spi) < 0) {
+        int fs{0};
+        if (ioctl(fs, SPI_IOC_MESSAGE(1), &erase_spi) < 0) {
             std::cerr << "Error erasing sector: " << strerror(errno) << std::endl;
         }
     }
 
     void St25vf010_t::erase_entire_memory(SPI::Spi_t &spi_s) {
-        const uint32_t num_sectors = MEMORY_SIZE / SECTOR_SIZE;
+        const uint32_t num_sectors = SPIConstants::MEMORY_SIZE / SPIConstants::SECTOR_SIZE;
 
         for (uint32_t i = 0; i < num_sectors; ++i) {
-            uint32_t address = i * SECTOR_SIZE;
+            uint32_t address = i * SPIConstants::SECTOR_SIZE;
             erase_sector(spi_s, address);
             std::cout << "Sector " << i << " erased." << std::endl;
         }
@@ -56,7 +56,7 @@ namespace ST25VF010 {
 
     void St25vf010_t::erase() {
         // Verifica si el dispositivo SPI se ha abierto correctamente
-        if (!spi->is_open()) {
+        if (!spi->isOpen()) {
             std::cerr << "Failed to open SPI device." << std::endl;
             return;
         }
