@@ -13,7 +13,7 @@
 
 namespace SPIConstants {
     constexpr const char* SPI_DEVICE = "/dev/spidev0.1";
-    constexpr uint32_t SPEED = 100000;
+    constexpr uint32_t SPEED = 1000000;
     constexpr uint8_t BYTE_PROGRAM = 0x2;
     constexpr uint8_t CMD_READ = 0x3;
     constexpr uint8_t WREN = 0x6;
