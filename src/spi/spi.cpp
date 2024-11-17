@@ -1,5 +1,13 @@
 #include <spi/spi.hpp>
 #include <iomanip>
+#include <iostream>       // Solo para salida por consola en implementación
+#include <cstring>        // Para manipulación interna de buffers
+#include <stdexcept>      // Para lanzar excepciones internas
+#include <fcntl.h>        // Operaciones de archivos
+#include <unistd.h>       // Funciones de manejo de archivos
+#include <sys/ioctl.h>    // IOCTL para SPI
+#include <linux/spi/spidev.h> // Configuración específica de SPI
+
 
 namespace SPI {
 

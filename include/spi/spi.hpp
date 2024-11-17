@@ -1,14 +1,15 @@
 #pragma once
 
-#include <iostream>
+
 #include <vector>
 #include <cstdint>
-#include <cstring>
-#include <stdexcept>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/spi/spidev.h>
+//#include <cstring>
+//#include <stdexcept>
+//#include <fcntl.h>
+//#include <unistd.h>
+//#include <sys/ioctl.h>
+//#include <linux/spi/spidev.h>
+//#include <iostream>
 
 namespace SPIConstants {
     constexpr const char* SPI_DEVICE = "/dev/spidev0.1";

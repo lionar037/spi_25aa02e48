@@ -1,13 +1,9 @@
 //codigo st25vf010.hpp
-
 #pragma once
 
+#include<spi/spi.hpp>
 #include <cstdint>
 #include <memory>
-
-//namespace SPI{
-//    struct Spi_t;
-//}
 
 namespace ST25VF010{
 
@@ -26,7 +22,6 @@ struct St25vf010_t{
     protected:
         void init();
 
-#include<spi/spi.hpp>
 
         void erase_sector(SPI::Spi_t &spi, uint32_t address)    ;
         void erase_entire_memory(SPI::Spi_t &spi) ;
