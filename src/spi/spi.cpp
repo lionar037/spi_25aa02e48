@@ -85,15 +85,15 @@ namespace SPI {
         cmd_byte_spi(WRDI); //Write-Disable
     }
 
-// Función auxiliar para configurar la estructura SPI
-void Spi_t::configure_spi_transfer(spi_ioc_transfer &spi_transfer, const uint8_t *tx_buf, uint8_t *rx_buf, size_t len) {
-    spi_transfer.len = len;
-    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buf);
-    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buf);
-    spi_transfer.speed_hz = get_spi_speed();
-    spi_transfer.bits_per_word = 8;
-    spi_transfer.cs_change = 0;
-}
+    // Función auxiliar para configurar la estructura SPI
+    void Spi_t::configure_spi_transfer(spi_ioc_transfer &spi_transfer, const uint8_t *tx_buf, uint8_t *rx_buf, size_t len) {
+        spi_transfer.len = len;
+        spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buf);
+        spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buf);
+        spi_transfer.speed_hz = get_spi_speed();
+        spi_transfer.bits_per_word = 8;
+        spi_transfer.cs_change = 0;
+    }
 
 void Spi_t::cmd_byte_spi(const uint8_t cmd) {
     spi_ioc_transfer spi_transfer = {};  // Reinicializamos la estructura SPI
@@ -106,6 +106,25 @@ void Spi_t::cmd_byte_spi(const uint8_t cmd) {
     int ret = ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer);
     if (ret < 0) {
         std::cerr << "Error en EWSR: " << strerror(errno) << " (Código de error: " << ret << ")" << std::endl;
+    }
+}
+
+
+void Spi_t::write_enable() {
+    //uint8_t cmd = WREN;  // Comando de habilitación de escritura
+    std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
+    std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
+
+    tx_buffer[0] = WREN;  // Comando de habilitación de escritura
+    spi_ioc_transfer spi_transfer{};
+    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
+    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
+    spi_transfer.bits_per_word = 8;
+    spi_transfer.speed_hz = get_spi_speed();
+    spi_transfer.len = 1;  // Solo el comando
+
+    if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
+        std::cerr << "writeEnable() - Error al habilitar escritura: " << strerror(errno) << std::endl;
     }
 }
 
@@ -188,11 +207,11 @@ const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd) {
     }
 
     void Spi_t::write_aai(const uint32_t address, std::vector<uint8_t>& vect_buffer) {                                        
+        write_enable();  // Habilitar escritura
         if (vect_buffer.empty()) {
             std::cerr << "write_aai() - Datos vacíos o tamaño de datos incorrecto." << std::endl;
             return;
         }
-
         std::vector<uint8_t> tx_buffer_vect(vect_buffer.size() + 4, 0xff);
         std::vector<uint8_t> rx_buffer_vect(vect_buffer.size() + 4, 0xff);
 
@@ -209,11 +228,9 @@ const uint8_t Spi_t::cmd_byte_spi_duo(const uint8_t cmd) {
         spi_transfer.tx_buf = reinterpret_cast<uintptr_t>(tx_buffer_vect.data());
         spi_transfer.rx_buf = reinterpret_cast<uintptr_t>(rx_buffer_vect.data());
         spi_transfer.bits_per_word = 8;
-        spi_transfer.speed_hz = spi_speed;
+        spi_transfer.speed_hz = get_spi_speed();
         spi_transfer.len = static_cast<__u32>(tx_buffer_vect.size());  // Longitud total (comando + dirección + datos)
         spi_transfer.cs_change = 0;
-
-        writeEnable();  // Habilitar escritura
 
         if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
             std::cerr << "write_aai() - Error al escribir en la memoria SPI: " << strerror(errno) << std::endl;

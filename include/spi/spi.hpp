@@ -20,7 +20,7 @@
 
 #define     SPI_DEVICE "/dev/spidev0.1"
     
-#define     SPEED               1000000
+#define     SPEED               100000
     
 #define     STATUS_BUSY         0x1 
 #define     WRSR                0x1
@@ -90,7 +90,8 @@ union statusREGISTER {
         void                writeDisable            ();
         void                cmd_byte_spi            (const uint8_t);
         void                writeEnable             () ;      
-    protected:                                                                
+    protected:   
+        void                write_enable            () ;                                                             
         void                configure_spi_transfer  (spi_ioc_transfer &spi_transfer, const uint8_t *tx_buf, uint8_t *rx_buf, size_t len);          
         template <typename BufferType>
         const bool          read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer);

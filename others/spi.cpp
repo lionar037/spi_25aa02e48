@@ -47,11 +47,11 @@ void SPI::init() {
 }
 
 void SPI::writeEnable() {
-    uint8_t cmd = 0x06;  // Comando de habilitación de escritura
+    //uint8_t cmd = WREN;  // Comando de habilitación de escritura
     std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
     std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
 
-    tx_buffer[0] = cmd;  // Comando de habilitación de escritura
+    tx_buffer[0] = WREN;  // Comando de habilitación de escritura
     spi_ioc_transfer spi_transfer{};
     spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
     spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
