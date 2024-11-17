@@ -46,7 +46,7 @@ union StatusRegister {
         bool read(uint32_t address, std::vector<uint8_t>& data);
         void eraseAll();
         uint8_t readStatus();
-        bool is_open() const;
+        bool isOpen() const;
 
     private:
         void initDevice();
