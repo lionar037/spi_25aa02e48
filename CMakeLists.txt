@@ -1,21 +1,42 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
+project(st25vf010_app)
 
-project(sst25vf010a)
+# Detectar la arquitectura
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(ARCH "aarch64")
+    set(APP bin/st25vf010_app_aarch64)
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv7l")
+    set(ARCH "armv7l")
+    set(APP bin/st25vf010_app_armv7l)
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(ARCH "x86_64")
+    set(APP bin/st25vf010_app_x86_64)
+else()
+    message(FATAL_ERROR "Arquitectura desconocida")
+endif()
 
+# Especificar los archivos fuente
+set(SOURCES
+    src/main.cpp
+    src/*/*.cpp
+)
+
+# Configuración de compilador
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
 
-#find_library(BCM2835_LIB bcm2835)
+# Añadir bibliotecas y directorios
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# Primer ejecutable: app
-add_executable(read_sst25vf read_sst25vf.cc spi.cc)
+# Crear el ejecutable
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(read_sst25vf)
+# Enlazar bibliotecas si es necesario
+target_link_libraries(${PROJECT_NAME} pthread bcm2835)
 
-# Segundo ejecutable: app2
-add_executable(write_sst25vf write_sst25vf.cc spi.cc)
-target_link_libraries(write_sst25vf)
+# Definir reglas de limpieza
+add_custom_target(clean_all
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/obj
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/log
+)
 
-
-# Segundo ejecutable: app3
-add_executable(erase_sst25vf erase_sst25vf.cc spi.cc)
-target_link_libraries(erase_sst25vf)
