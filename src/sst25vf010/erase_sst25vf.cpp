@@ -25,7 +25,7 @@ namespace ST25VF010 {
         }
 
         // Leer el registro de estado para verificar que la escritura está habilitada
-        uint8_t status = spi_s.cmd_byte_spi_duo(SPIConstants::RDSR);
+        auto status = spi_s.cmd_byte_spi_duo(SPIConstants::RDSR);
         if (!(status & 0x02)) { // Verificar el bit WEL
             std::cerr << "Write enable latch (WEL) not set." << std::endl;
             return;
@@ -65,7 +65,7 @@ namespace ST25VF010 {
         erase_entire_memory(*spi);
 
         // Cerrar el dispositivo SPI
-        spi->spi_close();
+        //spi->spi_close();
     }
 
 } // end namespace
