@@ -1,153 +1,135 @@
-//archivo spi.cpp"
 #include "spi.hpp"
-#include <iostream>
-#include <cstring>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/spi/spidev.h>
-#include <cerrno>
+#include <iomanip>
 
-namespace SPACE_SPI {
+namespace SPI {
 
-SPI::SPI(const std::string& device, uint32_t speed) : spi_speed(speed) {
-    fs = open(device.c_str(), O_RDWR);
-    if (fs < 0) {
-        std::cerr << "Error al abrir el dispositivo SPI: " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
+    Spi::Spi() : fd(-1) {
+        initDevice();
+        configureSPI();
     }
 
-    init();
-}
-
-SPI::~SPI() {
-    if (fs >= 0) {
-        close(fs);
-    }
-}
-
-void SPI::init() {
-    // Configurar el bus SPI
-    uint8_t mode = SPI_MODE_0;  // Modo SPI
-    uint8_t bits = 8;           // Bits por palabra
-    if (ioctl(fs, SPI_IOC_WR_MODE, &mode) < 0) {
-        std::cerr << "Error al configurar el modo SPI: " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
+    Spi::~Spi() {
+        if (fd >= 0) {
+            close(fd);
+        }
     }
 
-    if (ioctl(fs, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
-        std::cerr << "Error al configurar bits por palabra SPI: " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
+    void Spi::initDevice() {
+        fd = open(SPIConstants::SPI_DEVICE, O_RDWR);
+        if (fd < 0) {
+            throw std::runtime_error("Error al abrir el dispositivo SPI: " + std::string(strerror(errno)));
+        }
+
+        uint32_t mode = SPI_MODE_0;
+        if (ioctl(fd, SPI_IOC_WR_MODE, &mode) < 0) {
+            throw std::runtime_error("Error al configurar el modo SPI: " + std::string(strerror(errno)));
+        }
+
+        uint32_t speed = SPIConstants::SPEED;
+        if (ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+            throw std::runtime_error("Error al configurar la velocidad SPI: " + std::string(strerror(errno)));
+        }
+
+        uint8_t bits = 8;
+        if (ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
+            throw std::runtime_error("Error al configurar bits por palabra SPI: " + std::string(strerror(errno)));
+        }
     }
 
-    if (ioctl(fs, SPI_IOC_WR_MAX_SPEED_HZ, &spi_speed) < 0) {
-        std::cerr << "Error al configurar la velocidad SPI: " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
-    }
-}
-
-void SPI::writeEnable() {
-    //uint8_t cmd = WREN;  // Comando de habilitación de escritura
-    std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
-    std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
-
-    tx_buffer[0] = WREN;  // Comando de habilitación de escritura
-    spi_ioc_transfer spi_transfer{};
-    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
-    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
-    spi_transfer.bits_per_word = 8;
-    spi_transfer.speed_hz = spi_speed;
-    spi_transfer.len = 1;  // Solo el comando
-
-    if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-        std::cerr << "writeEnable() - Error al habilitar escritura: " << strerror(errno) << std::endl;
-    }
-}
-
-void SPI::write(uint32_t address, uint8_t* data, size_t length) {
-    if (length == 0 || data == nullptr) {
-        std::cerr << "write() - Datos vacíos o tamaño de datos incorrecto." << std::endl;
-        return;
+    void Spi::configureSPI() {
+        memset(txBuffer, 0xFF, sizeof(txBuffer));
+        memset(rxBuffer, 0xFF, sizeof(rxBuffer));
     }
 
-    std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
-    std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
-
-    writeEnable();  // Habilitar escritura
-
-    uint8_t cmd = 0x02;  // Comando de escritura
-    tx_buffer[0] = cmd;
-    tx_buffer[1] = (address >> 16) & 0xFF;  // Dirección alta
-    tx_buffer[2] = (address >> 8) & 0xFF;   // Dirección media
-    tx_buffer[3] = address & 0xFF;          // Dirección baja
-    std::memcpy(tx_buffer + 4, data, length);  // Copiar datos a tx_buffer
-
-    spi_ioc_transfer spi_transfer{};
-    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
-    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
-    spi_transfer.bits_per_word = 8;
-    spi_transfer.speed_hz = spi_speed;
-    spi_transfer.len = length + 4;  // Comando + Dirección + Datos
-
-    if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-        std::cerr << "write() - Error al escribir en la memoria SPI: " << strerror(errno) << std::endl;
-    }
-}
-
-uint8_t SPI::read(uint32_t address) {
-    std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
-    std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
-
-    uint8_t cmd = 0x03;  // Comando de lectura
-    tx_buffer[0] = cmd;
-    tx_buffer[1] = (address >> 16) & 0xFF;  // Dirección alta
-    tx_buffer[2] = (address >> 8) & 0xFF;   // Dirección media
-    tx_buffer[3] = address & 0xFF;          // Dirección baja
-
-    spi_ioc_transfer spi_transfer{};
-    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
-    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
-    spi_transfer.bits_per_word = 8;
-    spi_transfer.speed_hz = spi_speed;
-    spi_transfer.len = 4;  // Comando + Dirección
-
-    if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-        std::cerr << "read() - Error al leer desde la memoria SPI: " << strerror(errno) << std::endl;
-        return 0x00;  // Error en lectura
+    void Spi::initMemory() {
+        sendCommand(SPIConstants::WREN);
     }
 
-    return rx_buffer[4];  // Dato recibido
-}
+    uint8_t Spi::sendCommand(uint8_t command, const uint8_t* txBuf, uint8_t* rxBuf, size_t len) {
+        spi_ioc_transfer transfer = {};
+        transfer.tx_buf = reinterpret_cast<uintptr_t>(&command);
+        transfer.rx_buf = reinterpret_cast<uintptr_t>(rxBuf);
+        transfer.len = len;
+        transfer.speed_hz = SPIConstants::SPEED;
+        transfer.bits_per_word = 8;
 
-uint8_t SPI::read(uint32_t address, uint8_t* buffer, size_t size_buffer) {
-    if (size_buffer == 0 || buffer == nullptr) {
-        std::cerr << "read() - Tamaño del buffer inválido o puntero nulo." << std::endl;
-        return 0x00;  // Error en lectura
+        if (ioctl(fd, SPI_IOC_MESSAGE(1), &transfer) < 0) {
+            throw std::runtime_error("Error en la transferencia SPI: " + std::string(strerror(errno)));
+        }
+        return rxBuf ? rxBuf[0] : 0;
     }
 
-    std::memset(tx_buffer, 0xff, sizeof(tx_buffer));  // Limpiar buffer de TX
-    std::memset(rx_buffer, 0xff, sizeof(rx_buffer));  // Limpiar buffer de RX
-
-    uint8_t cmd = 0x03;  // Comando de lectura
-    tx_buffer[0] = cmd;
-    tx_buffer[1] = (address >> 16) & 0xFF;  // Dirección alta
-    tx_buffer[2] = (address >> 8) & 0xFF;   // Dirección media
-    tx_buffer[3] = address & 0xFF;          // Dirección baja
-
-    spi_ioc_transfer spi_transfer{};
-    spi_transfer.tx_buf = reinterpret_cast<unsigned long>(tx_buffer);
-    spi_transfer.rx_buf = reinterpret_cast<unsigned long>(rx_buffer);
-    spi_transfer.bits_per_word = 8;
-    spi_transfer.speed_hz = spi_speed;
-    spi_transfer.len = 4 + size_buffer;  // Comando + Dirección + Datos
-
-    if (ioctl(fs, SPI_IOC_MESSAGE(1), &spi_transfer) < 0) {
-        std::cerr << "read() - Error al leer desde la memoria SPI: " << strerror(errno) << std::endl;
-        return 0x00;  // Error en lectura
+    void Spi::writeEnable() {
+        sendCommand(SPIConstants::WREN);
     }
 
-    std::memcpy(buffer, rx_buffer + 4, size_buffer);  // Copiar los datos leídos a buffer
-    return 0x00;  // Lectura exitosa
-}
+    void Spi::writeDisable() {
+        sendCommand(SPIConstants::WRDI);
+    }
 
-}  // namespace SPACE_SPI
+    uint8_t Spi::readStatus() {
+        uint8_t status = 0;
+        sendCommand(SPIConstants::CMD_READ, nullptr, &status);
+        return status;
+    }
+
+    void Spi::eraseAll() {
+        writeEnable();
+        sendCommand(SPIConstants::CHIP_ERASE_ALL);
+        writeDisable();
+    }
+
+    void Spi::write(uint32_t address, const std::vector<uint8_t>& data) {
+        if (data.size() > SPIConstants::LARGE_SECTOR_SIZE) {
+            throw std::invalid_argument("El tamaño de datos excede el tamaño del sector.");
+        }
+
+        writeEnable();
+        // Configurar comando y dirección
+        txBuffer[0] = SPIConstants::BYTE_PROGRAM;
+        txBuffer[1] = (address >> 16) & 0xFF;
+        txBuffer[2] = (address >> 8) & 0xFF;
+        txBuffer[3] = address & 0xFF;
+
+        // Copiar los datos al buffer de transmisión
+        std::copy(data.begin(), data.end(), txBuffer + 4);
+
+        spi_ioc_transfer transfer = {};
+        transfer.tx_buf = reinterpret_cast<uintptr_t>(txBuffer);
+        transfer.len = data.size() + 4;
+        transfer.speed_hz = SPIConstants::SPEED;
+        transfer.bits_per_word = 8;
+
+        if (ioctl(fd, SPI_IOC_MESSAGE(1), &transfer) < 0) {
+            throw std::runtime_error("Error al escribir datos en la memoria SPI.");
+        }
+        writeDisable();
+    }
+
+    bool Spi::read(uint32_t address, std::vector<uint8_t>& data) {
+        if (data.empty()) {
+            throw std::invalid_argument("El buffer de lectura está vacío.");
+        }
+
+        txBuffer[0] = SPIConstants::CMD_READ;
+        txBuffer[1] = (address >> 16) & 0xFF;
+        txBuffer[2] = (address >> 8) & 0xFF;
+        txBuffer[3] = address & 0xFF;
+
+        spi_ioc_transfer transfer[2] = {};
+        transfer[0].tx_buf = reinterpret_cast<uintptr_t>(txBuffer);
+        transfer[0].len = 4;
+        transfer[1].rx_buf = reinterpret_cast<uintptr_t>(data.data());
+        transfer[1].len = data.size();
+
+        if (ioctl(fd, SPI_IOC_MESSAGE(2), transfer) < 0) {
+            return false;
+        }
+        return true;
+    }
+
+    bool Spi::isOpen() const {
+        return fd >= 0;
+    }
+
+    } // namespace SPI

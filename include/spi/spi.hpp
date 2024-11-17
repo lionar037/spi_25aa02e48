@@ -1,111 +1,62 @@
-//codigo spi.hpp
 #pragma once
 
 #include <iostream>
 #include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <errno.h>
+#include <cstdint>
+#include <cstring>
+#include <stdexcept>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
 
+namespace SPIConstants {
+    constexpr const char* SPI_DEVICE = "/dev/spidev0.1";
+    constexpr uint32_t SPEED = 100000;
+    constexpr uint8_t BYTE_PROGRAM = 0x2;
+    constexpr uint8_t CMD_READ = 0x3;
+    constexpr uint8_t WREN = 0x6;
+    constexpr uint8_t WRDI = 0x4;
+    constexpr uint8_t CHIP_ERASE_ALL = 0x60;
+    constexpr size_t LARGE_SECTOR_SIZE = 256;
+} // namespace SPIConstants
 
-//#include <spi/spi.tpp>
+namespace SPI {
 
-//#define DBG_SPI
-
-#define     SPI_DEVICE "/dev/spidev0.1"
-    
-#define     SPEED               100000
-    
-#define     STATUS_BUSY         0x1 
-#define     WRSR                0x1
-    
-#define     BYTE_PROGRAM      0x2
-#define     WRITE               0x2
-#define     CMD_WRITE           0x2
-    
-#define     CMD_READ            0x3
-#define     CMD_READ_DATA       0x3 
-#define     READ                0x3
-    
-#define     WRDI                0x4 //Write-Disable
-    
-#define     CMD_READ_STATUS     0x5
-#define     RDSR                0x5 // Read Status Register
-#define     CMD_WRITE_ENABLE    0x6
-#define     WREN                0x6  // Comando para habilitar escritura
-    
-#define     PAGE_SIZE           256 
-#define     EWSR                0x50
-#define     CMD_CE              0x60 //chip erase
-#define     CHIP_ERASE_ALL      CMD_CE //chip erase all
-    
-#define     SECTOR_SIZE_4       4
-#define     SECTOR_SIZE_8       8
-#define     LARGE_SECTOR_SIZE   256 // Tamaño de un sector grande (puede ser modificado)
-#define     AAI_CMD             0xAF //Auto Address Increment 
-#define     ADDRESS_END         0x1FFFF
-
-namespace SPI{
-
-union statusREGISTER {
-    struct statusBits{
-        unsigned int BUSY : 1;
-        unsigned int WEL  : 1;
-        unsigned int BP0  : 1;
-        unsigned int BP1  : 1;
-        unsigned int RES  : 2;
-        unsigned int AAI  : 1;
-        unsigned int BPL  : 1;
-    }status;
-    uint8_t byte;  // Permite el acceso directo al byte completo
+union StatusRegister {
+    struct {
+        uint8_t BUSY : 1;
+        uint8_t WEL : 1;
+        uint8_t BP0 : 1;
+        uint8_t BP1 : 1;
+        uint8_t RES : 2;
+        uint8_t AAI : 1;
+        uint8_t BPL : 1;
+    } bits;
+    uint8_t byte;
 };
 
+class Spi {
+public:
+    Spi();
+    ~Spi();
 
-    class Spi_t {
-    public:
-        Spi_t                                 ();
-        ~Spi_t                                ();
-       void                 init_sst25vf            ();
-       
-        void                write                   (const uint32_t , uint8_t* , const size_t);
-        const bool          read                    (const uint32_t , uint8_t* , const uint32_t);        
+    void initMemory();
+    void write(uint32_t address, const std::vector<uint8_t>& data);
+    bool read(uint32_t address, std::vector<uint8_t>& data);
+    void eraseAll();
+    uint8_t readStatus();
+    bool isOpen() const;
 
-        void                write                   (const uint32_t , std::vector<uint8_t>& );
-        const bool          read                    (const uint32_t , std::vector<uint8_t>& );
-        void                write_aai               (const uint32_t , std::vector<uint8_t>& ) ;
-        
-        void                erase_sst25_all         ();
-        bool                is_open                 ();
-        void                spi_close               ();
-        const uint32_t      get_spi_speed     ();
-        const uint8_t       get_fs                  ();
-        const uint8_t       read_status             ();
-        const uint8_t       cmd_byte_spi_duo        (const uint8_t);
-        void                writeDisable            ();
-        void                cmd_byte_spi            (const uint8_t);
-        void                writeEnable             () ;      
-    protected:   
-        void                write_enable            () ;                                                             
-        void                configure_spi_transfer  (spi_ioc_transfer &spi_transfer, const uint8_t *tx_buf, uint8_t *rx_buf, size_t len);          
-        template <typename BufferType>
-        const bool          read_write(const uint8_t cmd, const uint32_t address, BufferType& buffer);
-        //const bool          read_write              (const uint8_t, const uint32_t, uint8_t* ,const uint32_t);
-        //const bool          read_write              (const uint8_t , const uint32_t , std::vector<uint8_t>& ) ;
-        const bool          handle_spi_transfer     (const struct spi_ioc_transfer* transfer, size_t length) ;        
-    private:
-        void                init                    ();
-        void                settings_spi            ();
-        uint8_t             tx_buffer           [LARGE_SECTOR_SIZE];
-        uint8_t             rx_buffer           [LARGE_SECTOR_SIZE];
-        const uint32_t      spi_speed           ;
-        int                 fs                  ;
-        struct              spi_ioc_transfer    spi;        
-    };
+private:
+    void initDevice();
+    void configureSPI();
+    void writeEnable();
+    void writeDisable();
+    uint8_t sendCommand(uint8_t command, const uint8_t* txBuf = nullptr, uint8_t* rxBuf = nullptr, size_t len = 1);
 
-}
+    int fd;
+    uint8_t txBuffer[SPIConstants::LARGE_SECTOR_SIZE]{};
+    uint8_t rxBuffer[SPIConstants::LARGE_SECTOR_SIZE]{};
+};
+} // namespace SPI
