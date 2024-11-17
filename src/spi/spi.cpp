@@ -132,8 +132,25 @@ namespace SPI {
         return fd >= 0;
     }
 
-    const bool Spi_t::cmd_byte_spi_duo(const uint8_t cmd){
-    return true;
+    uint8_t 
+    Spi_t::cmd_byte_spi_duo(const uint8_t command){
+
+        txBuffer[0] = command;
+        //txBuffer[1] = (address >> 16) & 0xFF;
+        //txBuffer[2] = (address >> 8) & 0xFF;
+        //txBuffer[3] = address & 0xFF;
+
+        spi_ioc_transfer transfer[2] = {};
+        transfer[0].tx_buf = reinterpret_cast<uintptr_t>(txBuffer);
+        transfer[0].len = 1;
+        transfer[1].rx_buf = reinterpret_cast<uintptr_t>(rxBuffer);
+        transfer[1].len = 1;
+
+        if (ioctl(fd, SPI_IOC_MESSAGE(1), &transfer) < 0) {
+            throw std::runtime_error("Error en la transferencia SPI: " + std::string(strerror(errno)));
+            return 0x00;
+        }
+        return rxBuffer ? rxBuffer[1] : 0;
     }
 
 } // namespace SPI

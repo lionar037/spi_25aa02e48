@@ -38,7 +38,7 @@ namespace ST25VF010 {
         erase_spi.speed_hz = SPIConstants::SPEED;
         erase_spi.bits_per_word = 8;
         int fs{0};
-        if (ioctl(fs, SPI_IOC_MESSAGE(1), &erase_spi) < 0) {
+        if (ioctl(erase_spi.get_fd(), SPI_IOC_MESSAGE(1), &erase_spi) < 0) {
             std::cerr << "Error erasing sector: " << strerror(errno) << std::endl;
         }
     }

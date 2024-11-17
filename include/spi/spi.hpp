@@ -54,15 +54,18 @@ union StatusRegister {
         uint8_t readStatus();
         bool isOpen() const;
         const uint32_t get_spi_speed(){return SPIConstants::SPEED ;}
-        const bool cmd_byte_spi_duo(const uint8_t);
-        const uint8_t cmd_byte_spi(const uint8_t cmd){            
+        uint8_t cmd_byte_spi_duo(const uint8_t);
+        void cmd_byte_spi(const uint8_t cmd){            
             return sendCommand(cmd);
         }
+        void writeEnable();
+        void writeDisable();
+        const int get_fd(){return fd;}
     private:
         void initDevice();
         void configureSPI();
-        void writeEnable();
-        void writeDisable();
+        
+        
         uint8_t sendCommand(uint8_t command, const uint8_t* txBuf = nullptr, uint8_t* rxBuf = nullptr, size_t len = 1);
 
         int fd;
