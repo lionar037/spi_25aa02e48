@@ -36,27 +36,27 @@ union StatusRegister {
     uint8_t byte;
 };
 
-struct Spi_t {
-public:
-    Spi_t();
-    ~Spi_t();
+    struct Spi_t {
+    public:
+        Spi_t();
+        ~Spi_t();
 
-    void initMemory();
-    void write(uint32_t address, const std::vector<uint8_t>& data);
-    bool read(uint32_t address, std::vector<uint8_t>& data);
-    void eraseAll();
-    uint8_t readStatus();
-    bool isOpen() const;
+        void initMemory();
+        void write(uint32_t address, const std::vector<uint8_t>& data);
+        bool read(uint32_t address, std::vector<uint8_t>& data);
+        void eraseAll();
+        uint8_t readStatus();
+        bool isOpen() const;
 
-private:
-    void initDevice();
-    void configureSPI();
-    void writeEnable();
-    void writeDisable();
-    uint8_t sendCommand(uint8_t command, const uint8_t* txBuf = nullptr, uint8_t* rxBuf = nullptr, size_t len = 1);
+    private:
+        void initDevice();
+        void configureSPI();
+        void writeEnable();
+        void writeDisable();
+        uint8_t sendCommand(uint8_t command, const uint8_t* txBuf = nullptr, uint8_t* rxBuf = nullptr, size_t len = 1);
 
-    int fd;
-    uint8_t txBuffer[SPIConstants::LARGE_SECTOR_SIZE]{};
-    uint8_t rxBuffer[SPIConstants::LARGE_SECTOR_SIZE]{};
-};
+        int fd;
+        uint8_t txBuffer[SPIConstants::LARGE_SECTOR_SIZE]{};
+        uint8_t rxBuffer[SPIConstants::LARGE_SECTOR_SIZE]{};
+    };
 } // namespace SPI
