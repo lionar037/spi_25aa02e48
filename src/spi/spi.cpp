@@ -142,12 +142,7 @@ namespace SPI {
 
     uint8_t 
     Spi_t::cmd_byte_spi_duo(const uint8_t command){
-
         txBuffer[0] = command;
-        //txBuffer[1] = (address >> 16) & 0xFF;
-        //txBuffer[2] = (address >> 8) & 0xFF;
-        //txBuffer[3] = address & 0xFF;
-
         spi_ioc_transfer transfer[2] = {};
         transfer[0].tx_buf = reinterpret_cast<uintptr_t>(txBuffer);
         transfer[0].len = 1;
