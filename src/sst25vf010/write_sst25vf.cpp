@@ -12,9 +12,9 @@ namespace ST25VF010{
 	}
 
 	void St25vf010_t::init(){
-		spi->erase_sst25_all();
-		spi->init_sst25vf();
-		spi->read_status();
+		//spi->erase_sst25_all();
+		//spi->init_sst25vf();
+		//spi->read_status();
 	}
 
 	void St25vf010_t::write_rand() {	
